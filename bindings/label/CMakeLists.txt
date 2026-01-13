@@ -1,0 +1,4 @@
+set(BINDING_NAME label)
+list(APPEND BINDING_SOURCES
+  ${BINDING_NAME}_bindings.c)
+add_binding(${BINDING_NAME} ${BINDING_SOURCES})

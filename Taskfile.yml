@@ -1,0 +1,35 @@
+---
+version: '3'
+vars:
+  BIN_DIR: "{{.ROOT_DIR}}/bin"
+  BUILD_DIR: "{{.ROOT_DIR}}/build"
+tasks:
+  build-target:
+    dir: "{{.BUILD_DIR}}/"
+    cmds:
+    - cmake --build . --target {{.TARGET}}
+  configure:
+    cmds:
+    - cmake --preset={{.CLI_ARGS}} {{.ROOT_DIR}}
+  build:
+    cmds:
+    - task: build-target
+      vars:
+        TARGET: all
+  run:
+    dir: "{{.BUILD_DIR}}/"
+    env:
+      BAR_EXEC: "{{.BUILD_DIR}}/bar"
+      BAR_LIB_HOME: "{{.ROOT_DIR}}/"
+      BAR_CLIB_HOME: "{{.BUILD_DIR}}/bindings/"
+    cmds:
+    - "{{.BIN_DIR}}/run-bar {{.CLI_ARGS}}"
+  clean:
+    dir: "{{.BUILD_DIR}}/"
+    cmds:
+    - task: build-target
+      vars:
+        TARGET: clean
+  default:
+    cmds:
+    - task: build

@@ -1,0 +1,51 @@
+#!/usr/bin/env zsh
+BAR_EXEC="${BAR_EXEC:-./bar}"
+BAR_LIB_HOME="${BAR_LIB_HOME:-${0:a:h:h}}"
+BAR_CLIB_HOME="${BAR_CLIB_HOME:-$(pwd)/bindings}"
+BAR_CONFIG_HOME="${BAR_CONFIG_HOME:-$XDG_CONFIG_HOME/bar}"
+if [[ ! (-f "$BAR_EXEC" && -x "$BAR_EXEC") ]]; then
+  echo "failed to find mybar executable: $BAR_EXEC"
+  ls -lash .
+  return 1
+fi
+
+__generate_lua_path() {
+  lua_lib_paths=(
+    "$BAR_LIB_HOME"
+  )
+  reply=()
+  for path_dir in $lua_lib_paths; do
+    reply+=(
+      "$path_dir/?.lua"
+      "$path_dir/lua/?.lua"
+    )
+  done
+  return 0
+}
+
+__generate_lua_cpath() {
+  bindings=$(
+    fselect abspath from $BAR_CLIB_HOME/ depth 1 \
+      where is_dir and name != 'CMakeFiles'
+  )
+  bindings=("${(f)bindings}")
+
+  reply=()
+  for binding_dir in $bindings; do
+    reply+=(
+      "$binding_dir/?.so"
+    )
+  done
+  return 0
+}
+
+__generate_lua_path
+lua_path="${(j|;|)reply};;"
+
+__generate_lua_cpath
+lua_cpath="${(j|;|)reply};;"
+
+(cd "$BAR_CONFIG_HOME/" \
+  && LUA_PATH=$lua_path \
+     LUA_CPATH=$lua_cpath \
+     $BAR_EXEC)
