@@ -15,6 +15,11 @@ get_bar_init_filename(BarState* state) {
 
 void barL_doinit(BarState* state) {
   ASSERT(state);
+#define L state->L
+  barL_initmetatable_evr(L);
+  barL_initmetatable_label(L);
+  barL_initmetatable_button(L);
+#undef L
   char* init_filename = get_bar_init_filename(state);
   if(!init_filename)
     return;
@@ -22,13 +27,40 @@ void barL_doinit(BarState* state) {
   free(init_filename);
 }
 
-static inline int
-new_label(lua_State* L) {
-  lua_getglobal(L, "bar_state");
-  BarState* state = (BarState*)lua_touserdata(L, -1);
-  ASSERT(state);
-  // GtkWidget *label = gtk_label_new("Arch Linux 2026 | GTK4 Status Bar");
-  // gtk_window_set_child(GTK_WINDOW(window), label);
+void barL_pushevr(lua_State* L, EventRouter* evr) {
+  ASSERT(L);
+  ASSERT(evr);
+  lua_pushlightuserdata(L, evr);
+  luaL_getmetatable(L, kEventRouterMetatableName);
+  lua_setmetatable(L, -2);
+}
+
+void barL_pushlabel(lua_State* L, Label* value) {
+  ASSERT(L);
+  ASSERT(value);
+  lua_pushlightuserdata(L, value);
+  luaL_getmetatable(L, kLabelMetatableName);
+  lua_setmetatable(L, -2);
+}
+
+void barL_pushbutton(lua_State* L, Button* value) {
+  ASSERT(L);
+  ASSERT(value);
+  lua_pushlightuserdata(L, value);
+  luaL_getmetatable(L, kButtonMetatableName);
+  lua_setmetatable(L, -2);
+}
+
+Button* barL_tobutton(lua_State* L, const int index) {
+  ASSERT(L);
+  ASSERT(index != 0);
+  return (Button*)lua_touserdata(L, index);
+}
+
+EventRouter* barL_getevr(lua_State* L, const int index) {
+  ASSERT(L);
+  ASSERT(index != 0);
+  return (EventRouter*)lua_touserdata(L, index);
 }
 
 static inline void
@@ -37,9 +69,6 @@ barL_init_bindings(BarState* state) {
 #define L state->L
   lua_pushlightuserdata(L, state);
   lua_setglobal(L, "bar_state");
-
-  lua_pushcfunction(L, new_label);
-  lua_setglobal(L, "new-label");
 #undef L
 }
 

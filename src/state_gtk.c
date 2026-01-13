@@ -1,6 +1,13 @@
 #include "state_gtk.h"
 #include "state_lua.h"
 
+static inline gboolean
+on_idle(gpointer data) {
+  BarState* state = (BarState*)data;
+  bar_publish(state, "idle");
+  return G_SOURCE_CONTINUE;
+}
+
 static inline void
 on_activate(GtkApplication* app, gpointer user_data) {
   BarState* state = (BarState*)user_data;
@@ -8,9 +15,11 @@ on_activate(GtkApplication* app, gpointer user_data) {
 
   barL_doinit(state);
 
+  g_idle_add((GSourceFunc) on_idle, user_data);
   // GTK4 windows are hidden by default
   gtk_widget_show(state->window);
 }
+
 
 void bar_init_gtk_app(BarState* state) {
   ASSERT(state);

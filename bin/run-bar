@@ -46,6 +46,8 @@ __generate_lua_cpath
 lua_cpath="${(j|;|)reply};;"
 
 (cd "$BAR_CONFIG_HOME/" \
-  && LUA_PATH=$lua_path \
+  && MESA_DEBUG=silent \
+     MESA_LOG_FILE=mesa.log \
+     LUA_PATH=$lua_path \
      LUA_CPATH=$lua_cpath \
      $BAR_EXEC)

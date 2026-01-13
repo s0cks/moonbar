@@ -3,6 +3,6 @@
 
 #include "mybar/luabindings.h"
 
-LUALIB_API int luaopen_button(lua_State* L);
+LUALIB_API int luaopen_button_bindings(lua_State* L);
 
 #endif // BUTTON_BINDINGS_H

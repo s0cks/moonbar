@@ -1,9 +1,5 @@
-list(APPEND BAR_SOURCES
-  version.c
-  state.c
-  state_lua.c
-  state_debug.c
-  state_gtk.c)
+file(GLOB BAR_SOURCES
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.c")
 
 add_library(${PROJECT_NAME}-core SHARED ${BAR_SOURCES})
 target_include_directories(${PROJECT_NAME}-core

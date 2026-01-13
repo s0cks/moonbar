@@ -1,6 +1,8 @@
 --- TODO(@s0cks): clean this up, weird bindings naming
 local M = require('bar_bindings')
 
+M.inspect = require('inspect')
+
 local function split(s, sep)
   local values = {}
   local pattern = "[^" .. sep .. "]+"

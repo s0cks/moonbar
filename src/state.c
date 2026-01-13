@@ -45,6 +45,11 @@ bool bar_state_init(BarState* state, int argc, char** argv) {
   state->argc = argc;
   state->argv = argv;
   state->home = bar_get_home_from_env();
+  state->events = evr_new();
+  if(!state->events) {
+    bar_state_error(state, "failed to create EventRouter.");
+    return false;
+  }
   barL_init(state);
   bar_init_gtk_app(state);
   return true;
