@@ -1,11 +1,11 @@
 #include "mybar.h"
 
 int main(int argc, char **argv) {
-  BarState state;
-  if(!bar_state_init(&state, argc, argv))
+  BarApp app;
+  if(!bar_app_init(&app, argc, argv))
     return EXIT_FAILURE;
-  bar_state_run(&state);
-  bar_state_close(&state);
+  bar_app_run(&app);
+  bar_app_free(&app);
   return EXIT_SUCCESS;
 }
 

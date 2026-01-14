@@ -1,43 +1,34 @@
 #include "state_gtk.h"
 #include "state_lua.h"
 
-static inline gboolean
-on_idle(gpointer data) {
-  BarState* state = (BarState*)data;
-  bar_publish(state, "idle");
-  return G_SOURCE_CONTINUE;
-}
-
 static inline void
-on_activate(GtkApplication* app, gpointer user_data) {
-  BarState* state = (BarState*)user_data;
-  bar_init_gtk_window(state);
+on_activate(GtkApplication* gtk_app, gpointer user_data) {
+  BarApp* app = (BarApp*)user_data;
+  bar_init_gtk_window(app);
 
-  barL_doinit(state);
+  const char* style = barL_get_style(app);
+  //TODO(@s0cks): load style
 
-  g_idle_add((GSourceFunc) on_idle, user_data);
-  // GTK4 windows are hidden by default
-  gtk_widget_show(state->window);
+  barL_call_config_init(app);
+  gtk_window_present(GTK_WINDOW(app->window));
 }
 
-
-void bar_init_gtk_app(BarState* state) {
-  ASSERT(state);
-  GtkApplication* app = gtk_application_new("org.example.gtk4bar", G_APPLICATION_DEFAULT_FLAGS);
-  if(!app) {
-    bar_state_error(state, "failed to create gtk application");
+void bar_init_gtk_app(BarApp* app) {
+  ASSERT(app);
+  GtkApplication* gtk_app = gtk_application_new("org.example.gtk4bar", G_APPLICATION_DEFAULT_FLAGS);
+  if(!gtk_app) {
+    bar_error(app, "failed to create gtk application");
     return;
   }
-
-  state->app = app;
-  bar_signal_connect(state, "activate", G_CALLBACK(on_activate));
+  app->app = gtk_app;
+  bar_signal_connect(app, "activate", G_CALLBACK(on_activate));
 }
 
-void bar_init_gtk_window(BarState* state) {
-  ASSERT(state);
-  GtkWidget* window = gtk_application_window_new(state->app);
+void bar_init_gtk_window(BarApp* app) {
+  ASSERT(app);
+  GtkWidget* window = gtk_application_window_new(app->app);
   if(!window) {
-    bar_state_error(state, "failed to create gtk window");
+    bar_error(app, "failed to create gtk window");
     return;
   }
   gtk_layer_init_for_window(GTK_WINDOW(window));
@@ -46,16 +37,12 @@ void bar_init_gtk_window(BarState* state) {
   gtk_layer_set_anchor(GTK_WINDOW(window), GTK_LAYER_SHELL_EDGE_TOP, TRUE);
   gtk_layer_set_anchor(GTK_WINDOW(window), GTK_LAYER_SHELL_EDGE_LEFT, TRUE);
   gtk_layer_set_anchor(GTK_WINDOW(window), GTK_LAYER_SHELL_EDGE_RIGHT, TRUE);
-  state->window = window;
+  app->window = window;
 }
 
-void bar_load_style(BarState* state, const char* filename) {
-  ASSERT(state);
+void bar_load_style(BarApp* app, const char* filename) {
+  ASSERT(app);
   ASSERT(filename);
-#ifdef BAR_DEBUG
-  fprintf(stdout, "loading bar style from %s .....\n", filename);
-#endif // BAR_DEBUG
-  //
   GtkCssProvider* css_provider = gtk_css_provider_new();
   if(!css_provider) {
     fprintf(stderr, "failed to create gtk css provider.\n");
@@ -63,7 +50,7 @@ void bar_load_style(BarState* state, const char* filename) {
   }
 
   GdkDisplay* display = NULL;
-  bar_get_display_safely(state, &display);
+  bar_get_display_safely(app, &display);
 
   GFile* css_file = g_file_new_for_path(filename);
   gtk_css_provider_load_from_file(css_provider, css_file);
@@ -71,9 +58,4 @@ void bar_load_style(BarState* state, const char* filename) {
 
   g_object_unref(css_file);
   g_object_unref(css_provider);
-#ifdef BAR_DEBUG
-
-  fprintf(stdout, "finished loading bar style.\n");
-
-#endif // BAR_DEBUG
 }

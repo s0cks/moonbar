@@ -1,3 +1,3 @@
-local M = require('button_bindings')
+local M = ButtonLib
 
 return M

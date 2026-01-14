@@ -52,7 +52,37 @@ static const luaL_Reg kButtonFuncs[] = {
 
   FOR_EACH_BUTTON_SIGNAL(BIND_BUTTON_SIGNAL_F)
 #undef BIND_BUTTON_SIGNAL_F
-  {NULL, NULL},
+  { NULL, NULL },
+};
+
+DEFINE_LUA_F(button_new) {
+  const char* text = NULL;
+  if(lua_isnoneornil(L, -1)) {
+    text = NULL;
+  } else if(lua_isstring(L, -1)) {
+    text = lua_tostring(L, -1);
+  } else {
+    text = lua_tostring(L, -1);
+  }
+
+  BarApp* app = barL_get_bar_app(L);
+  if(!app) {
+    luaL_error(L, "failed to get global bar state");
+    return 0;
+  }
+
+  Button* value = bar_create_button(app, text);
+  if(!value) {
+    luaL_error(L, "failed to create gtk button.");
+    return 0;
+  }
+  barL_pushbutton(L, value);
+  return 1;
+}
+
+static const luaL_Reg kButtonLibFuncs[] = {
+  { "new", button_new },
+  { NULL, NULL },
 };
 
 void barL_initmetatable_button(lua_State* L) {
@@ -60,4 +90,10 @@ void barL_initmetatable_button(lua_State* L) {
   luaL_setfuncs(L, kButtonFuncs, 0);
   lua_pushvalue(L, -1);
   lua_setfield(L, -2, "__index");
+
+  lua_newtable(L);
+  luaL_setfuncs(L, kButtonLibFuncs, 0);
+  lua_pushvalue(L, -1);
+  lua_setfield(L, -2, "__index");
+  lua_setglobal(L, "ButtonLib");
 }

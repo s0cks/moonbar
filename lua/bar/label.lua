@@ -1,3 +1,3 @@
-local M = require('label_bindings')
+local M = LabelLib
 
 return M

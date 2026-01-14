@@ -1,15 +1,15 @@
 #include "label.h"
 #include "state.h"
 
-Label* bar_create_label(BarState* state, const char* text) {
+Label* bar_create_label(BarApp* app, const char* text) {
   GtkWidget* widget = gtk_label_new(text);
   if(!widget) {
-    bar_state_error(state, "failed to create Label");
+    bar_error(app, "failed to create Label");
     return NULL;
   }
-  gtk_window_set_child(GTK_WINDOW(state->window), widget);
+  gtk_window_set_child(GTK_WINDOW(app->window), widget);
   Label* label = (Label*)malloc(sizeof(Label));
-  label->owner = state;
+  label->owner = app;
   label->handle = widget;
   memset(&label->callbacks[0], 0, sizeof(label->callbacks));
   g_object_ref(label->handle);

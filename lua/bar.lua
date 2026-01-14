@@ -1,5 +1,5 @@
 --- TODO(@s0cks): clean this up, weird bindings naming
-local M = require('bar_bindings')
+local M = CoreLib
 
 M.inspect = require('inspect')
 
@@ -23,7 +23,8 @@ function M.print_info()
   print('')
   print('mybar info:')
   --- TODO(@s0cks): print version
-  print('  home: ' .. M.get_home())
+  print('  config dir: ' .. M.get_config_dir())
+  print('  current working dir: ' .. M.get_cwd())
   print_path_var('path', package.path)
   print_path_var('cpath', package.cpath)
   print('')

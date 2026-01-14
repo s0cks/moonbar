@@ -18,10 +18,10 @@ message(STATUS "luajit include dirs: ${LuaJIT_INCLUDE_DIRS}")
 
 add_subdirectory(src)
 
-option(BUILD_BINDINGS "Build lua binding libs." ON)
-if(BUILD_BINDINGS)
-  add_subdirectory(bindings/)
-endif()
+# option(BUILD_BINDINGS "Build lua binding libs." ON)
+# if(BUILD_BINDINGS)
+#   add_subdirectory(bindings/)
+# endif()
 
 option(ENABLE_TESTS "Enable tests." OFF)
 if(ENABLE_TESTS)

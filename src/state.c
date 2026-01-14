@@ -1,6 +1,7 @@
 #include "mybar.h"
 #include "state_lua.h"
 #include "state_gtk.h"
+#include "app.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,39 +34,12 @@ char* bar_get_home_from_env() {
   return new_home;
 }
 
-void bar_state_error(BarState* state, const char* err) {
-  ASSERT(state);
-  ASSERT(err);
-  fprintf(stderr, "bar state error: %s\n", err);
-  exit(1);
-}
-
-bool bar_state_init(BarState* state, int argc, char** argv) {
-  ASSERT(state);
-  state->argc = argc;
-  state->argv = argv;
-  state->home = bar_get_home_from_env();
-  state->events = evr_new();
-  if(!state->events) {
-    bar_state_error(state, "failed to create EventRouter.");
-    return false;
+char* bar_app_get_cwd(BarApp* app) {
+  ASSERT(app);
+  char cwd[PATH_MAX];
+  if(getcwd(cwd, sizeof(cwd)) == NULL) {
+      bar_error(app, "failed to get cwd");
+      return NULL;
   }
-  barL_init(state);
-  bar_init_gtk_app(state);
-  return true;
-}
-
-bool bar_state_run(BarState* state) {
-  int status = g_application_run(G_APPLICATION(state->app), state->argc, state->argv);
-  //TODO(@s0cks): check status
-  return true;
-}
-
-void bar_state_close(BarState* state) {
-  ASSERT(state);
-  if(state->app)
-    g_object_unref(state->app);
-  barL_close(state);
-  if(state->home)
-    free(state->home);
+  return strdup(cwd);
 }

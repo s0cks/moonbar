@@ -3,7 +3,6 @@
 
 #include "mybar.h"
 
-
 #define FOR_EACH_BUTTON_SIGNAL(V) \
   V(Clicked, clicked) \
   V(Show, show) \
@@ -17,7 +16,7 @@ enum Signal : int {
 };
 
 struct _Button {
-  BarState* owner;
+  BarApp* owner;
   GtkWidget* handle;
   int callbacks[kTotalNumberOfButtonSignals];
 };
