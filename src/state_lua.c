@@ -41,35 +41,29 @@ const char* mbarL_get_style(BarApp* app) {
 #undef L
 }
 
-void mbarL_pushlabel(lua_State* L, Label* value) {
-  ASSERT(L);
-  ASSERT(value);
-  lua_pushlightuserdata(L, value);
-  luaL_getmetatable(L, kLabelMetatableName);
-  lua_setmetatable(L, -2);
-}
+#define DEFINE_LUA_PUSH_TYPE(Name, Type)                  \
+  void mbarL_push##Name(lua_State* L, Type* value) {      \
+    ASSERT(L);                                            \
+    ASSERT(value);                                        \
+    lua_pushlightuserdata(L, value);                      \
+    luaL_getmetatable(L, k##Type##MetatableName);         \
+    lua_setmetatable(L, -2);                              \
+  }
+DEFINE_LUA_PUSH_TYPE(label, Label);
+DEFINE_LUA_PUSH_TYPE(button, Button);
+DEFINE_LUA_PUSH_TYPE(event_route, EventRoute);
+#undef DEFINE_LUA_PUSH_TYPE
 
-void mbarL_pusheventroute(lua_State* L, EventRoute* value) {
-  ASSERT(L);
-  ASSERT(value);
-  lua_pushlightuserdata(L, value);
-  luaL_getmetatable(L, kEventRouteMetatableName);
-  lua_setmetatable(L, -2);
-}
-
-void mbarL_pushbutton(lua_State* L, Button* value) {
-  ASSERT(L);
-  ASSERT(value);
-  lua_pushlightuserdata(L, value);
-  luaL_getmetatable(L, kButtonMetatableName);
-  lua_setmetatable(L, -2);
-}
-
-Button* mbarL_tobutton(lua_State* L, const int index) {
-  ASSERT(L);
-  ASSERT(index != 0);
-  return (Button*)lua_touserdata(L, index);
-}
+#define DEFINE_LUA_TO_TYPE(Name, Type)                      \
+  Type* mbarL_to##Name(lua_State* L, const int index) {     \
+    ASSERT(L);                                              \
+    ASSERT(index != 0);                                     \
+    return (Type*)lua_touserdata(L, index);                 \
+  }
+DEFINE_LUA_TO_TYPE(label, Label);
+DEFINE_LUA_TO_TYPE(button, Button);
+DEFINE_LUA_TO_TYPE(event_route, EventRoute);
+#undef DEFINE_LUA_TO_TYPE
 
 static inline void
 mbarL_init_bindings(BarApp* app) {

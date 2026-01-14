@@ -5,42 +5,6 @@ BarApp* mbarL_get_mbar_app(lua_State* L);
 void mbarL_dostring(BarApp* app, const char* code);
 void mbarL_dofile(BarApp* app, const char* filename);
 
-void mbarL_pusheventroute(lua_State* L, EventRoute* value);
-
-void mbarL_pushlabel(lua_State* L, Label* value);
-Label* mbarL_tolabel(lua_State* L, const int index);
-
-static inline void
-mbarL_pushlabelx(BarApp* app, Label* value) {
-#define L app->L
-  return mbarL_pushlabel(L, value);
-#undef L
-}
-
-static inline Label*
-mbarL_tolabelx(BarApp* app, const int index) {
-#define L app->L
-  return mbarL_tolabel(L, index);
-#undef L
-}
-
-void mbarL_pushbutton(lua_State* L, Button* value);
-Button* mbarL_tobutton(lua_State* L, const int index);
-
-static inline void
-mbarL_pushbuttonx(BarApp* app, Button* value) {
-#define L app->L
-  return mbarL_pushbutton(L, value);
-#undef L
-}
-
-static inline Button*
-mbarL_tobuttonx(BarApp* app, const int index) {
-#define L app->L
-  return mbarL_tobutton(L, index);
-#undef L
-}
-
 #define FOR_EACH_METATABLE_NAME(V) \
   V(Label) \
   V(Button) \
@@ -51,3 +15,36 @@ mbarL_tobuttonx(BarApp* app, const int index) {
 
 FOR_EACH_METATABLE_NAME(DEFINE_METATABLE_NAME)
 #undef DEFINE_METATABLE_NAME
+
+#define DECLARE_LUA_PUSH_TYPE(Name, Type)             \
+  void mbarL_push##Name(lua_State* L, Type* value);   \
+  static inline void                                  \
+  mbarL_push##Name##x(BarApp* app, Type* value) {     \
+    return mbarL_push##Name(app->L, value);           \
+  }
+
+#define DECLARE_LUA_TO_TYPE(Name, Type)                   \
+  Type* mbarL_to##Name(lua_State* L, const int index);    \
+  static inline Type*                                     \
+  mbarL_to##Name##x(BarApp* app, const int index) {       \
+    return mbarL_to##Name(app->L, index);                 \
+  }
+
+#define DECLARE_LUA_TYPE_STACK_OPS(Name, Type) \
+  DECLARE_LUA_PUSH_TYPE(Name, Type) \
+  DECLARE_LUA_TO_TYPE(Name, Type)
+
+// ╭────────╮
+// │ Labels │
+// ╰────────╯
+DECLARE_LUA_TYPE_STACK_OPS(label, Label);
+
+// ╭─────────╮
+// │ Buttons │
+// ╰─────────╯
+DECLARE_LUA_TYPE_STACK_OPS(button, Button);
+
+// ╭─────────────╮
+// │ EventRoutes │
+// ╰─────────────╯
+DECLARE_LUA_TYPE_STACK_OPS(event_route, EventRoute);

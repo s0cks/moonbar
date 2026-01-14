@@ -29,7 +29,7 @@ static const luaL_Reg kEventRouteFuncs[] = {
 
 DEFINE_LUA_F(new_event_route) {
   EventRoute* value = event_route_new();
-  mbarL_pusheventroute(L, value);
+  mbarL_pushevent_route(L, value);
   return 1;
 }
 
