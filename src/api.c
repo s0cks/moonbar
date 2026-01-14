@@ -20,10 +20,18 @@ DEFINE_LUA_F(get_cwd) {
   return 1;
 }
 
+DEFINE_LUA_F(on) {
+  barL_check_global_app(L, app);
+  const char* event = lua_tostring(L, 1);
+  event_route_insertl(app->events, event, L, 2);
+  return 0;
+}
+
 static const luaL_Reg kLibFuncs[] = {
   { "is_debug", is_debug },
   { "get_config_dir", get_config_dir },
   { "get_cwd", get_cwd },
+  { "on", on },
   { NULL, NULL },
 };
 

@@ -25,6 +25,7 @@ barL_push_config_ref(BarApp* app) {
 void barL_init_api(lua_State* L);
 void barL_initmetatable_label(lua_State* L);
 void barL_initmetatable_button(lua_State* L);
+void barL_initmetatable_event_route(lua_State* L);
 
 static inline void
 barL_hello_world(BarApp* app) {

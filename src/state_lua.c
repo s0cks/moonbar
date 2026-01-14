@@ -50,6 +50,14 @@ void barL_pushlabel(lua_State* L, Label* value) {
   lua_setmetatable(L, -2);
 }
 
+void barL_pusheventroute(lua_State* L, EventRoute* value) {
+  ASSERT(L);
+  ASSERT(value);
+  lua_pushlightuserdata(L, value);
+  luaL_getmetatable(L, kEventRouteMetatableName);
+  lua_setmetatable(L, -2);
+}
+
 void barL_pushbutton(lua_State* L, Button* value) {
   ASSERT(L);
   ASSERT(value);

@@ -11,6 +11,15 @@ on_activate(GtkApplication* gtk_app, gpointer user_data) {
   //TODO(@s0cks): load style
 
   barL_call_config_init(app);
+
+  EventRoute* root = event_route_search(app->events, "post-init");
+  if(root) {
+#define L app->L
+    event_route_call(L, root);
+#undef L
+  } else {
+    fprintf(stdout, "failed to find post-init event\n");
+  }
   gtk_window_present(GTK_WINDOW(app->window));
 }
 

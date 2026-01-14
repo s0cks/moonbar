@@ -17,6 +17,7 @@ bool bar_app_init(BarApp* app, int argc, char** argv) {
   app->argv = argv;
   app->loop = uv_loop_new();
   app->home = bar_get_config_dir();
+  app->events = event_route_new();
   // app->source = uv_gsource_init(app->loop);
   barL_init(app);
   bar_init_gtk_app(app);

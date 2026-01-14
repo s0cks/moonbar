@@ -29,10 +29,13 @@
 #define BAR_VERSION_PATCH @PROJECT_VERSION_PATCH@
 // clang-format on
 
+#include "mybar/event_router.h"
+
 typedef struct _BarApp {
   char* home;
   int argc;
   char** argv;
+  EventRoute* events;
   // lua stuff
   lua_State* L;
   int config_ref;
@@ -66,6 +69,8 @@ void bar_free_button(Button* value);
 BarApp* barL_get_bar_app(lua_State* L);
 void barL_dostring(BarApp* app, const char* code);
 void barL_dofile(BarApp* app, const char* filename);
+
+void barL_pusheventroute(lua_State* L, EventRoute* value);
 
 void barL_pushlabel(lua_State* L, Label* value);
 Label* barL_tolabel(lua_State* L, const int index);
@@ -103,7 +108,8 @@ barL_tobuttonx(BarApp* app, const int index) {
 
 #define FOR_EACH_METATABLE_NAME(V) \
   V(Label) \
-  V(Button)
+  V(Button) \
+  V(EventRoute)
 
 #define DEFINE_METATABLE_NAME(Name) \
   static const char* k##Name##MetatableName = #Name;
