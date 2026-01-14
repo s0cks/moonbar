@@ -17,7 +17,6 @@ EventRoute* event_route_new() {
 bool event_route_call(lua_State* L, EventRoute* root) {
   if(!root || root->callback == LUA_NOREF)
     return false;
-  fprintf(stdout, "calling event route %s\n", root->path);
   lua_rawgeti(L, LUA_REGISTRYINDEX, root->callback);
   return lua_pcall(L, 0, 0, 0) == LUA_OK;
 }

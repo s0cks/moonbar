@@ -7,7 +7,6 @@ Label* bar_create_label(BarApp* app, const char* text) {
     bar_error(app, "failed to create Label");
     return NULL;
   }
-  gtk_window_set_child(GTK_WINDOW(app->window), widget);
   Label* label = (Label*)malloc(sizeof(Label));
   label->owner = app;
   label->handle = widget;

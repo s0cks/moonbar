@@ -11,6 +11,38 @@ void bar_error(BarApp* app, const char* err) {
   exit(1);
 }
 
+void bar_publish(BarApp* app, const char* event) {
+  EventRoute* root = event_route_search(app->events, event);
+  if(!root)
+    return;
+#define L app->L
+  event_route_call(L, root);
+#undef L
+}
+
+static inline void on_tick(uv_timer_t* handle) {
+
+}
+
+static inline gboolean
+on_update_tick(gpointer data) {
+  BarApp* app = (BarApp*)data;
+  fprintf(stdout, "g update tick\n");
+  return G_SOURCE_CONTINUE;
+}
+
+static inline int
+create_update_timer(BarApp* app) {
+  return g_timeout_add_seconds(1, on_update_tick, app);
+}
+
+void bar_start_update_timer(BarApp* app) {
+  ASSERT(app);
+  if(app->update_timer != 0)
+    return;
+  app->update_timer = create_update_timer(app);
+}
+
 bool bar_app_init(BarApp* app, int argc, char** argv) {
   ASSERT(app);
   app->argc = argc;
@@ -18,10 +50,16 @@ bool bar_app_init(BarApp* app, int argc, char** argv) {
   app->loop = uv_loop_new();
   app->home = bar_get_config_dir();
   app->events = event_route_new();
-  // app->source = uv_gsource_init(app->loop);
+  uv_timer_init(app->loop, &app->timer);
+  uv_timer_start(&app->timer, on_tick, 0, 1000);
+  app->source = uv_gsource_init(app->loop);
   barL_init(app);
   bar_init_gtk_app(app);
   return true;
+}
+
+void bar_add_left(BarApp* app, GtkWidget* widget) {
+
 }
 
 bool bar_app_run(BarApp* app) {

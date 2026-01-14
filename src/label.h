@@ -6,8 +6,8 @@
 static constexpr const int kMaxNumberOfCallbacks = 4;
 
 struct _Label {
-  BarApp* owner;
   GtkWidget* handle;
+  BarApp* owner;
   int callbacks[kMaxNumberOfCallbacks];
 };
 

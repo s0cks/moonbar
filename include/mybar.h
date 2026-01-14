@@ -42,8 +42,14 @@ typedef struct _BarApp {
   // gtk stuff
   GtkApplication* app;
   GtkWidget* window;
+  GtkCenterBox* box;
+  GtkWidget* left;
+  GtkWidget* center;
+  GtkWidget* right;
+  int update_timer;
   // uv stuff
   uv_loop_t* loop;
+  uv_timer_t timer;
   struct _uv_gsource* source;
 } BarApp;
 

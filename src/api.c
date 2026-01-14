@@ -27,11 +27,40 @@ DEFINE_LUA_F(on) {
   return 0;
 }
 
+static inline GtkWidget**
+widget_ptr(lua_State* L, const int index) {
+  return (GtkWidget**)lua_touserdata(L, index);
+}
+
+DEFINE_LUA_F(add_left) {
+  barL_check_global_app(L, app);
+  GtkWidget* widget = *(widget_ptr(L, 1));
+  gtk_box_append(GTK_BOX(app->left), widget);
+  return 0;
+}
+
+DEFINE_LUA_F(add_center) {
+  barL_check_global_app(L, app);
+  GtkWidget* widget = *(widget_ptr(L, 1));
+  gtk_box_append(GTK_BOX(app->center), widget);
+  return 0;
+}
+
+DEFINE_LUA_F(add_right) {
+  barL_check_global_app(L, app);
+  GtkWidget* widget = *(widget_ptr(L, 1));
+  gtk_box_append(GTK_BOX(app->right), widget);
+  return 0;
+}
+
 static const luaL_Reg kLibFuncs[] = {
   { "is_debug", is_debug },
   { "get_config_dir", get_config_dir },
   { "get_cwd", get_cwd },
   { "on", on },
+  { "add_left", add_left },
+  { "add_center", add_center },
+  { "add_right", add_right },
   { NULL, NULL },
 };
 

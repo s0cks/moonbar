@@ -1,25 +1,78 @@
 #include "state_gtk.h"
 #include "state_lua.h"
 #include "app.h"
+#include "uv_gsource.h"
+
+// Left
+static inline GtkWidget*
+bar_create_left_box_with_padding(BarApp* app, const int padding) {
+  GtkWidget* box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, padding);
+  gtk_widget_add_css_class(box, "left");
+  gtk_widget_set_halign(box, GTK_ALIGN_START);
+  gtk_widget_set_valign(box, GTK_ALIGN_CENTER);
+  return box;
+}
+
+static inline GtkWidget*
+bar_create_left_box(BarApp* app) {
+  return bar_create_left_box_with_padding(app, 0);
+}
+
+// Center
+static inline GtkWidget*
+bar_create_center_box_with_padding(BarApp* app, const int padding) {
+  GtkWidget* box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, padding);
+  gtk_widget_add_css_class(box, "center");
+  gtk_widget_set_halign(box, GTK_ALIGN_CENTER);
+  gtk_widget_set_valign(box, GTK_ALIGN_CENTER);
+  return box;
+}
+
+static inline GtkWidget*
+bar_create_center_box(BarApp* app) {
+  return bar_create_center_box_with_padding(app, 0);
+}
+
+// Right
+static inline GtkWidget*
+bar_create_right_box_with_padding(BarApp* app, const int padding) {
+  GtkWidget* box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, padding);
+  gtk_widget_add_css_class(box, "right");
+  gtk_widget_set_halign(box, GTK_ALIGN_END);
+  gtk_widget_set_valign(box, GTK_ALIGN_CENTER);
+  return box;
+}
+
+static inline GtkWidget*
+bar_create_right_box(BarApp* app) {
+  return bar_create_right_box_with_padding(app, 0);
+}
+
+// Main
+static inline GtkCenterBox*
+bar_create_main_box(BarApp* app) {
+  GtkWidget* box = gtk_center_box_new();
+  gtk_widget_add_css_class(box, "main");
+  //TODO(@s0cks): do something?
+  return GTK_CENTER_BOX(box);
+}
 
 static inline void
 on_activate(GtkApplication* gtk_app, gpointer user_data) {
   BarApp* app = (BarApp*)user_data;
+  barL_call_config_init(app);
+  bar_publish(app, "init");
   bar_init_gtk_window(app);
 
-  const char* style = barL_get_style(app);
-  //TODO(@s0cks): load style
+  app->box = bar_create_main_box(app);
+  bar_set_left(app, bar_create_left_box(app));
+  bar_set_center(app, bar_create_center_box(app));
+  bar_set_right(app, bar_create_right_box(app));
+  gtk_window_set_child(GTK_WINDOW(app->window), GTK_WIDGET(app->box));
 
-  barL_call_config_init(app);
+  bar_load_style(app);
 
-  EventRoute* root = event_route_search(app->events, "post-init");
-  if(root) {
-#define L app->L
-    event_route_call(L, root);
-#undef L
-  } else {
-    fprintf(stdout, "failed to find post-init event\n");
-  }
+  bar_publish(app, "post-init");
   gtk_window_present(GTK_WINDOW(app->window));
 }
 
@@ -50,9 +103,15 @@ void bar_init_gtk_window(BarApp* app) {
   app->window = window;
 }
 
-void bar_load_style(BarApp* app, const char* filename) {
+void bar_load_style(BarApp* app) {
   ASSERT(app);
+  bar_publish(app, "style.pre-load");
+  const char* filename = barL_get_style(app);
   ASSERT(filename);
+#ifdef BAR_DEBUG
+  fprintf(stdout, "loading style from %s ....\n", filename);
+#endif // BAR_DEBUG
+
   GtkCssProvider* css_provider = gtk_css_provider_new();
   if(!css_provider) {
     fprintf(stderr, "failed to create gtk css provider.\n");
@@ -68,4 +127,8 @@ void bar_load_style(BarApp* app, const char* filename) {
 
   g_object_unref(css_file);
   g_object_unref(css_provider);
+#ifdef BAR_DEBUG
+  fprintf(stdout, "finished loading style.\n");
+#endif // BAR_DEBUG
+  bar_publish(app, "style.post-load");
 }
