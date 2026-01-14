@@ -1,5 +1,5 @@
 #include "button_bindings.h"
-#include "mybar.h"
+#include "moonbar.h"
 
 DEFINE_LUA_F(button_new) {
   const char* text = NULL;
@@ -11,19 +11,19 @@ DEFINE_LUA_F(button_new) {
     text = lua_tostring(L, -1);
   }
 
-  BarState* state = barL_get_bar_state(L);
+  BarState* state = mbarL_get_mbar_state(L);
   if(!state) {
     luaL_error(L, "failed to get global bar state");
     return 0;
   }
 
-  Button* button = bar_create_button(state, text);
+  Button* button = mbar_create_button(state, text);
   if(!button) {
     luaL_error(L, "failed to create gtk button.");
     return 0;
   }
 
-  barL_pushbutton(L, button);
+  mbarL_pushbutton(L, button);
   return 1;
 }
 

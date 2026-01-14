@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.29)
-project(bar
+project(moonbar
   VERSION 0.0.1
-  HOMEPAGE_URL https://github.com/s0cks/mybar
+  HOMEPAGE_URL https://github.com/s0cks/moonbar
   LANGUAGES C)
 
-set(BAR_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
+set(MBAR_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 if(CMAKE_BUILD_TYPE MATCHES "^[Dd]ebug")
-  add_compile_definitions(BAR_DEBUG)
+  add_compile_definitions(MBAR_DEBUG)
 endif()
 
 find_package(PkgConfig REQUIRED)

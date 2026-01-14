@@ -21,7 +21,7 @@ end
 
 function M.print_info()
   print('')
-  print('mybar info:')
+  print('moonbar info:')
   --- TODO(@s0cks): print version
   print('  config dir: ' .. M.get_config_dir())
   print('  current working dir: ' .. M.get_cwd())

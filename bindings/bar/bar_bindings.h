@@ -1,9 +1,9 @@
-#ifndef BAR_BINDINGS_H
-#define BAR_BINDINGS_H
+#ifndef MBAR_BINDINGS_H
+#define MBAR_BINDINGS_H
 
-#include "mybar.h"
-#include "mybar/luabindings.h"
+#include "moonbar.h"
+#include "moonbar/luabindings.h"
 
-LUALIB_API int luaopen_bar_bindings(lua_State* L);
+LUALIB_API int luaopen_mbar_bindings(lua_State* L);
 
-#endif // BAR_BINDINGS_H
+#endif // MBAR_BINDINGS_H

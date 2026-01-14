@@ -1,7 +1,7 @@
-#ifndef BAR_BUTTON_H
-#define BAR_BUTTON_H
+#ifndef MBAR_BUTTON_H
+#define MBAR_BUTTON_H
 
-#include "mybar.h"
+#include "moonbar.h"
 
 #define FOR_EACH_BUTTON_SIGNAL(V) \
   V(Clicked, clicked) \
@@ -21,4 +21,4 @@ struct _Button {
   int callbacks[kTotalNumberOfButtonSignals];
 };
 
-#endif // BAR_BUTTON_H
+#endif // MBAR_BUTTON_H

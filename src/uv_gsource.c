@@ -1,5 +1,5 @@
 #include "uv_gsource.h"
-#include "mybar.h"
+#include "moonbar.h"
 
 static inline gboolean
 uv_gsource_prepare(GSource* source, gint* timeout) {

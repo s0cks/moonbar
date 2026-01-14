@@ -1,18 +1,18 @@
-#include "mybar.h"
+#include "moonbar.h"
 #include "state_lua.h"
 #include "state_gtk.h"
 #include "uv_gsource.h"
 #include "util.h"
 #include "log.h"
 
-void bar_error(BarApp* app, const char* err) {
+void mbar_error(BarApp* app, const char* err) {
   ASSERT(app);
   ASSERT(err);
   fprintf(stderr, "bar state error: %s\n", err);
   exit(1);
 }
 
-void bar_publish(BarApp* app, const char* event) {
+void mbar_publish(BarApp* app, const char* event) {
   EventRoute* root = event_route_search(app->events, event);
   if(!root)
     return;
@@ -24,7 +24,7 @@ void bar_publish(BarApp* app, const char* event) {
 static inline void
 on_tick(uv_timer_t* handle) {
   BarApp* app = (BarApp*)handle->data;
-  bar_on_tick(app);
+  mbar_on_tick(app);
 }
 
 static inline gboolean
@@ -39,41 +39,41 @@ create_update_timer(BarApp* app) {
   return g_timeout_add_seconds(1, on_update_tick, app);
 }
 
-void bar_start_update_timer(BarApp* app) {
+void mbar_start_update_timer(BarApp* app) {
   ASSERT(app);
   if(app->update_timer != 0)
     return;
   app->update_timer = create_update_timer(app);
 }
 
-bool bar_app_init(BarApp* app, int argc, char** argv) {
+bool mbar_app_init(BarApp* app, int argc, char** argv) {
   ASSERT(app);
   app->argc = argc;
   app->argv = argv;
   app->loop = uv_loop_new();
-  app->home = bar_get_config_dir();
+  app->home = mbar_get_config_dir();
   app->events = event_route_new();
   app->next_tick_listeners = NULL;
   uv_timer_init(app->loop, &app->timer);
   uv_timer_start(&app->timer, on_tick, 0, 1000);
   app->timer.data = app;
   app->source = uv_gsource_init(app->loop);
-  barL_init(app);
-  bar_init_gtk_app(app);
+  mbarL_init(app);
+  mbar_init_gtk_app(app);
   return true;
 }
 
-bool bar_app_run(BarApp* app) {
+bool mbar_app_run(BarApp* app) {
   int status = g_application_run(G_APPLICATION(app->app), app->argc, app->argv);
   //TODO(@s0cks): check status
   return true;
 }
 
-void bar_app_free(BarApp* app) {
+void mbar_app_free(BarApp* app) {
   ASSERT(app);
   if(app->app)
     g_object_unref(app->app);
-  barL_close(app);
+  mbarL_close(app);
   if(app->home)
     free(app->home);
   uv_gsource_free(app->source);
@@ -90,14 +90,14 @@ execute_next_tick_listeners(BarApp* app) {
   do {
     if(!cb)
       break;
-    bar_exec_cb(app, cb);
+    mbar_exec_cb(app, cb);
     prev = cb;
     cb = cb->next;
     cb_free(prev);
   } while(cb);
 }
 
-void bar_exec_cb(BarApp* app, Callback* cb) {
+void mbar_exec_cb(BarApp* app, Callback* cb) {
   ASSERT(app);
   ASSERT(cb);
   if(cb_is_lua(cb)) {
@@ -109,7 +109,7 @@ void bar_exec_cb(BarApp* app, Callback* cb) {
   }
 }
 
-void bar_on_tick(BarApp* app) {
+void mbar_on_tick(BarApp* app) {
   ASSERT(app);
   execute_next_tick_listeners(app);
   //TODO(@s0cks): run next tick listeners

@@ -1,15 +1,15 @@
-#ifndef BAR_STATE_GTK_H
-#define BAR_STATE_GTK_H
+#ifndef MBAR_STATE_GTK_H
+#define MBAR_STATE_GTK_H
 
-#include "mybar.h"
+#include "moonbar.h"
 #include "app.h"
 
-void bar_init_gtk_app(BarApp* app);
-void bar_init_gtk_window(BarApp* app);
-void bar_load_style(BarApp* app);
+void mbar_init_gtk_app(BarApp* app);
+void mbar_init_gtk_window(BarApp* app);
+void mbar_load_style(BarApp* app);
 
 static inline void
-bar_set_main_box(BarApp* app, GtkCenterBox* box) {
+mbar_set_main_box(BarApp* app, GtkCenterBox* box) {
   ASSERT(app);
   ASSERT(box);
   app->box = box;
@@ -17,7 +17,7 @@ bar_set_main_box(BarApp* app, GtkCenterBox* box) {
 }
 
 static inline GtkWidget*
-bar_set_left(BarApp* app, GtkWidget* w) {
+mbar_set_left(BarApp* app, GtkWidget* w) {
   ASSERT(app);
   ASSERT(w);
   gtk_center_box_set_start_widget(app->box, w);
@@ -26,7 +26,7 @@ bar_set_left(BarApp* app, GtkWidget* w) {
 }
 
 static inline GtkWidget*
-bar_set_center(BarApp* app, GtkWidget* w) {
+mbar_set_center(BarApp* app, GtkWidget* w) {
   ASSERT(app);
   ASSERT(w);
   gtk_center_box_set_center_widget(app->box, w);
@@ -35,7 +35,7 @@ bar_set_center(BarApp* app, GtkWidget* w) {
 }
 
 static inline GtkWidget*
-bar_set_right(BarApp* app, GtkWidget* w) {
+mbar_set_right(BarApp* app, GtkWidget* w) {
   ASSERT(app);
   ASSERT(w);
   gtk_center_box_set_end_widget(app->box, w);
@@ -44,25 +44,25 @@ bar_set_right(BarApp* app, GtkWidget* w) {
 }
 
 static inline void
-bar_signal_connect(BarApp* app, const char* signal, GCallback cb) {
+mbar_signal_connect(BarApp* app, const char* signal, GCallback cb) {
   ASSERT(app);
   g_signal_connect(app->app, "activate", cb, app);
 }
 
 static inline GdkDisplay*
-bar_get_display(BarApp* app) {
+mbar_get_display(BarApp* app) {
   ASSERT(app);
   ASSERT(app->window);
   return gtk_widget_get_display(app->window);
 }
 
 static inline void
-bar_get_display_safely(BarApp* app, GdkDisplay** display) {
+mbar_get_display_safely(BarApp* app, GdkDisplay** display) {
   ASSERT(app);
   ASSERT((*display) == NULL);
-  (*display) = bar_get_display(app);
+  (*display) = mbar_get_display(app);
   if(!(*display))
-    bar_error(app, "failed to get gtk display from window");
+    mbar_error(app, "failed to get gtk display from window");
 }
 
-#endif // BAR_STATE_GTK_H
+#endif // MBAR_STATE_GTK_H

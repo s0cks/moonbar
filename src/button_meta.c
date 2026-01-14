@@ -1,7 +1,7 @@
-#include "mybar.h"
+#include "moonbar.h"
 #include "button.h"
 #include "state_lua.h"
-#include "mybar/luabindings.h"
+#include "moonbar/luabindings.h"
 
 #define INVALID_BUTTON_USERDATA ({            \
   luaL_error(L, "invalid Button userdata.");  \
@@ -65,18 +65,18 @@ DEFINE_LUA_F(button_new) {
     text = lua_tostring(L, -1);
   }
 
-  BarApp* app = barL_get_bar_app(L);
+  BarApp* app = mbarL_get_mbar_app(L);
   if(!app) {
     luaL_error(L, "failed to get global bar state");
     return 0;
   }
 
-  Button* value = bar_create_button(app, text);
+  Button* value = mbar_create_button(app, text);
   if(!value) {
     luaL_error(L, "failed to create gtk button.");
     return 0;
   }
-  barL_pushbutton(L, value);
+  mbarL_pushbutton(L, value);
   return 1;
 }
 
@@ -85,7 +85,7 @@ static const luaL_Reg kButtonLibFuncs[] = {
   { NULL, NULL },
 };
 
-void barL_initmetatable_button(lua_State* L) {
+void mbarL_initmetatable_button(lua_State* L) {
   luaL_newmetatable(L, "Button");
   luaL_setfuncs(L, kButtonFuncs, 0);
   lua_pushvalue(L, -1);

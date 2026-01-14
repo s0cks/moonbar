@@ -1,5 +1,5 @@
-#ifndef BAR_LUABINDINGS_H
-#define BAR_LUABINDINGS_H
+#ifndef MBAR_LUABINDINGS_H
+#define MBAR_LUABINDINGS_H
 
 #include <lua.h>
 #include <lualib.h>
@@ -33,4 +33,4 @@
 #define DEFINE_LUAOPEN_ENTRY(Name) \
   _DEFINE_LUAOPEN_ENTRY(Name, kLib_##Name)
 
-#endif // BAR_LUABINDINGS_H
+#endif // MBAR_LUABINDINGS_H

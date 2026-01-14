@@ -5,7 +5,7 @@
 static const char* kInitFilename = "init.lua";
 
 static inline char*
-get_bar_init_filename(BarApp* app) {
+get_mbar_init_filename(BarApp* app) {
   ASSERT(app);
   size_t filename_size = strlen(app->home) + strlen(kInitFilename) + 2;
   char* filename = (char*)malloc(sizeof(char) * filename_size);
@@ -13,27 +13,27 @@ get_bar_init_filename(BarApp* app) {
   return filename;
 }
 
-void barL_doinit(BarApp* app) {
+void mbarL_doinit(BarApp* app) {
   ASSERT(app);
-  char* init_filename = get_bar_init_filename(app);
+  char* init_filename = get_mbar_init_filename(app);
   if(!init_filename) {
-    bar_error(app, "failed to get init filename");
+    mbar_error(app, "failed to get init filename");
     return;
   }
-  barL_dofile(app, init_filename);
-  barL_init_config_ref(app);
+  mbarL_dofile(app, init_filename);
+  mbarL_init_config_ref(app);
   free(init_filename);
 }
 
-const char* barL_get_style(BarApp* app) {
+const char* mbarL_get_style(BarApp* app) {
   ASSERT(app);
 #define L app->L
-  barL_push_config_ref(app);
+  mbarL_push_config_ref(app);
   lua_getfield(L, -1, "style");
   if(lua_isstring(L, -1)) {
     return lua_tostring(L, -1);
   } else if(!lua_isnoneornil(L, -1)) {
-    bar_error(app, "invalid style type");
+    mbar_error(app, "invalid style type");
     return NULL;
   }
 
@@ -41,7 +41,7 @@ const char* barL_get_style(BarApp* app) {
 #undef L
 }
 
-void barL_pushlabel(lua_State* L, Label* value) {
+void mbarL_pushlabel(lua_State* L, Label* value) {
   ASSERT(L);
   ASSERT(value);
   lua_pushlightuserdata(L, value);
@@ -49,7 +49,7 @@ void barL_pushlabel(lua_State* L, Label* value) {
   lua_setmetatable(L, -2);
 }
 
-void barL_pusheventroute(lua_State* L, EventRoute* value) {
+void mbarL_pusheventroute(lua_State* L, EventRoute* value) {
   ASSERT(L);
   ASSERT(value);
   lua_pushlightuserdata(L, value);
@@ -57,7 +57,7 @@ void barL_pusheventroute(lua_State* L, EventRoute* value) {
   lua_setmetatable(L, -2);
 }
 
-void barL_pushbutton(lua_State* L, Button* value) {
+void mbarL_pushbutton(lua_State* L, Button* value) {
   ASSERT(L);
   ASSERT(value);
   lua_pushlightuserdata(L, value);
@@ -65,43 +65,43 @@ void barL_pushbutton(lua_State* L, Button* value) {
   lua_setmetatable(L, -2);
 }
 
-Button* barL_tobutton(lua_State* L, const int index) {
+Button* mbarL_tobutton(lua_State* L, const int index) {
   ASSERT(L);
   ASSERT(index != 0);
   return (Button*)lua_touserdata(L, index);
 }
 
 static inline void
-barL_init_bindings(BarApp* app) {
+mbarL_init_bindings(BarApp* app) {
   ASSERT(app);
 #define L app->L
   lua_pushlightuserdata(L, app);
-  lua_setglobal(L, LUA_GLOBAL_BAR_STATE);
+  lua_setglobal(L, LUA_GLOBAL_MBAR_STATE);
 #undef L
 }
 
-BarApp* barL_get_bar_app(lua_State* L) {
-  lua_getglobal(L, LUA_GLOBAL_BAR_STATE);
+BarApp* mbarL_get_mbar_app(lua_State* L) {
+  lua_getglobal(L, LUA_GLOBAL_MBAR_STATE);
   return (BarApp*)lua_touserdata(L, -1);
 }
 
-void barL_init(BarApp* app) {
+void mbarL_init(BarApp* app) {
   ASSERT(app);
 #define L app->L
   L = luaL_newstate();
   if(!L) {
-    bar_error(app, "failed to create lua state");
+    mbar_error(app, "failed to create lua state");
     return;
   }
 
   luaL_openlibs(L);
-  barL_init_bindings(app);
-  barL_init_api(L);
-  barL_doinit(app);
+  mbarL_init_bindings(app);
+  mbarL_init_api(L);
+  mbarL_doinit(app);
 #undef L
 }
 
-void barL_close(BarApp* app) {
+void mbarL_close(BarApp* app) {
   ASSERT(app);
 #define L app->L
   if(L)
@@ -109,7 +109,7 @@ void barL_close(BarApp* app) {
 #undef L
 }
 
-void barL_dostring(BarApp* app, const char* code) {
+void mbarL_dostring(BarApp* app, const char* code) {
   ASSERT(app);
   ASSERT(code);
 #define L app->L
@@ -120,7 +120,7 @@ void barL_dostring(BarApp* app, const char* code) {
 #undef L
 }
 
-void barL_dofile(BarApp* app, const char* filename) {
+void mbarL_dofile(BarApp* app, const char* filename) {
   ASSERT(app);
   ASSERT(filename);
 
@@ -138,20 +138,20 @@ void barL_dofile(BarApp* app, const char* filename) {
 #undef L
 }
 
-void barL_init_config_ref(BarApp* app) {
+void mbarL_init_config_ref(BarApp* app) {
   ASSERT(app);
 #define L app->L
   if(!lua_istable(L, -1)) {
-    bar_error(app, "expected config to return a table");
+    mbar_error(app, "expected config to return a table");
     return;
   }
   app->config_ref = luaL_ref(L, LUA_REGISTRYINDEX);
 #undef L
 }
 
-void barL_call_config_init(BarApp* app) {
+void mbarL_call_config_init(BarApp* app) {
   ASSERT(app);
-  barL_push_config_ref(app);
+  mbarL_push_config_ref(app);
 #define L app->L
   lua_getfield(L, -1, "init");
   if(lua_isnoneornil(L, -1)) {
@@ -163,7 +163,7 @@ void barL_call_config_init(BarApp* app) {
   }
   int status = lua_pcall(L, 0, 1, 0);
   if(status != LUA_OK) {
-    bar_error(app, "failed to executing config['init']");
+    mbar_error(app, "failed to executing config[init]");
     return;
   }
 #undef L

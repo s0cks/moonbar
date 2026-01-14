@@ -1,8 +1,8 @@
-#ifndef BAR_LUA_CALLBACK_H
-#define BAR_LUA_CALLBACK_H
+#ifndef MBAR_LUA_CALLBACK_H
+#define MBAR_LUA_CALLBACK_H
 
 #include <stdint.h>
-#include "mybar.h"
+#include "moonbar.h"
 
 typedef void (*CallbackFuncPtr)(void);
 typedef struct _Callback Callback;
@@ -225,4 +225,4 @@ cb_iter_next(CallbackIter* iter) {
   iter->curr = cb_iter_is_forward(iter) ? iter->curr->next : iter->curr->prev;
 }
 
-#endif // BAR_LUA_CALLBACK_H
+#endif // MBAR_LUA_CALLBACK_H

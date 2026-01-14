@@ -1,11 +1,11 @@
 find_package(libuv CONFIG REQUIRED)
 
-file(GLOB BAR_SOURCES
+file(GLOB MBAR_SOURCES
   "${CMAKE_CURRENT_SOURCE_DIR}/*.c")
 
-add_library(${PROJECT_NAME}-core SHARED ${BAR_SOURCES})
+add_library(${PROJECT_NAME}-core SHARED ${MBAR_SOURCES})
 target_include_directories(${PROJECT_NAME}-core
-  PUBLIC ${BAR_INCLUDE_DIR}
+  PUBLIC ${MBAR_INCLUDE_DIR}
          ${LuaJIT_INCLUDE_DIRS}
   PRIVATE
          ${CMAKE_CURRENT_SOURCE_DIR})

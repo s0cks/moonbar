@@ -1,5 +1,5 @@
 #include "util.h"
-#include "mybar.h"
+#include "moonbar.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,8 +11,8 @@ bool file_exists(const char* filename) {
   return access(filename, F_OK) == 0;
 }
 
-char* bar_get_config_dir() {
-  char* home = getenv("BAR_HOME");
+char* mbar_get_config_dir() {
+  char* home = getenv("MBAR_HOME");
   if(home)
     return strdup(home);
   home = getenv("XDG_CONFIG_HOME");
@@ -37,7 +37,7 @@ char* bar_get_config_dir() {
   return new_home;
 }
 
-char* bar_get_cwd() {
+char* mbar_get_cwd() {
   char cwd[PATH_MAX];
   if(getcwd(cwd, sizeof(cwd)) == NULL) {
       fprintf(stderr, "failed to get current working directory.\n");

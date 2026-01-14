@@ -1,7 +1,7 @@
-#ifndef BAR_EVENT_ROUTER_H
-#define BAR_EVENT_ROUTER_H
+#ifndef MBAR_EVENT_ROUTER_H
+#define MBAR_EVENT_ROUTER_H
 
-#include "mybar/luabindings.h"
+#include "moonbar/luabindings.h"
 
 static constexpr const int kEventAlphabetSize = 28;
 typedef struct _EventRoute EventRoute;
@@ -20,4 +20,4 @@ EventRoute* event_route_insert(EventRoute* root, const char* event, const int ca
 EventRoute* event_route_insertl(EventRoute* route, const char* event, lua_State* L, const int index);
 EventRoute* event_route_search(EventRoute* root, const char* event);
 
-#endif // BAR_EVENT_ROUTER_H
+#endif // MBAR_EVENT_ROUTER_H

@@ -1,8 +1,8 @@
-#ifdef BAR_DEBUG
+#ifdef MBAR_DEBUG
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "mybar.h"
+#include "moonbar.h"
 
-#endif //BAR_DEBUG
+#endif //MBAR_DEBUG

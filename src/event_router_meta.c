@@ -1,5 +1,5 @@
-#include "mybar/event_router.h"
-#include "mybar.h"
+#include "moonbar/event_router.h"
+#include "moonbar.h"
 
 DEFINE_LUA_F(on) {
   EventRoute* route = (EventRoute*)lua_touserdata(L, 1);
@@ -30,7 +30,7 @@ static const luaL_Reg kEventRouteFuncs[] = {
 
 DEFINE_LUA_F(new_event_route) {
   EventRoute* value = event_route_new();
-  barL_pusheventroute(L, value);
+  mbarL_pusheventroute(L, value);
   return 1;
 }
 
@@ -39,7 +39,7 @@ static const luaL_Reg kEventRouteLibFuncs[] = {
   { NULL, NULL },
 };
 
-void barL_initmetatable_event_route(lua_State* L) {
+void mbarL_initmetatable_event_route(lua_State* L) {
   luaL_newmetatable(L, kEventRouteMetatableName);
   luaL_setfuncs(L, kEventRouteFuncs, 0);
   lua_pushvalue(L, -1);

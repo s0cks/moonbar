@@ -1,10 +1,10 @@
 #include "label.h"
 #include "app.h"
 
-Label* bar_create_label(BarApp* app, const char* text) {
+Label* mbar_create_label(BarApp* app, const char* text) {
   GtkWidget* widget = gtk_label_new(text);
   if(!widget) {
-    bar_error(app, "failed to create Label");
+    mbar_error(app, "failed to create Label");
     return NULL;
   }
   Label* label = (Label*)malloc(sizeof(Label));
@@ -15,7 +15,7 @@ Label* bar_create_label(BarApp* app, const char* text) {
   return label;
 }
 
-void bar_free_label(Label* value) {
+void mbar_free_label(Label* value) {
   if(!value)
     return;
   //TODO(@s0cks): should probably free callbacks in Label

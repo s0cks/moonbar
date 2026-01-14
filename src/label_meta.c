@@ -1,7 +1,7 @@
-#include "mybar.h"
+#include "moonbar.h"
 #include "label.h"
 #include "state_lua.h"
-#include "mybar/luabindings.h"
+#include "moonbar/luabindings.h"
 
 DEFINE_LUA_F(set_text) {
   Label* label = (Label*)lua_touserdata(L, 1);
@@ -41,18 +41,18 @@ DEFINE_LUA_F(new_label) {
     text = lua_tostring(L, -1);
   }
 
-  BarApp* app = barL_get_bar_app(L);
+  BarApp* app = mbarL_get_mbar_app(L);
   if(!app) {
     luaL_error(L, "failed to get global bar state");
     return 0;
   }
 
-  Label* label = bar_create_label(app, text);
+  Label* label = mbar_create_label(app, text);
   if(!label) {
     luaL_error(L, "failed to create gtk label");
     return 0;
   }
-  barL_pushlabel(L, label);
+  mbarL_pushlabel(L, label);
   return 1;
 }
 
@@ -61,7 +61,7 @@ static const luaL_Reg kLabelLibFuncs[] = {
   {NULL, NULL}
 };
 
-void barL_initmetatable_label(lua_State* L) {
+void mbarL_initmetatable_label(lua_State* L) {
   luaL_newmetatable(L, kLabelMetatableName);
   luaL_setfuncs(L, kLabelFuncs, 0);
   lua_pushvalue(L, -1);

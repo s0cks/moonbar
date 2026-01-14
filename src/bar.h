@@ -1,4 +1,4 @@
-#ifndef BAR_BAR_H
-#define BAR_BAR_H
+#ifndef MBAR_MBAR_H
+#define MBAR_MBAR_H
 
-#endif // BAR_BAR_H
+#endif // MBAR_MBAR_H

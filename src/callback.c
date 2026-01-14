@@ -1,4 +1,4 @@
-#include "mybar.h"
+#include "moonbar.h"
 #include "log.h"
 
 void cb_init_cfunc(Callback* cb, const CallbackMode mode, void (*func_ptr)(void)) {

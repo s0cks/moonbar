@@ -1,12 +1,12 @@
-#ifndef BAR_LOG_H
-#define BAR_LOG_H
+#ifndef MBAR_LOG_H
+#define MBAR_LOG_H
 
 #define LOG(Message) \
   fprintf(stdout, "%s\n", (Message))
 #define LOG_F(Format, ...) \
   fprintf(stdout, Format "\n", __VA_ARGS__)
 
-#ifdef BAR_DEBUG
+#ifdef MBAR_DEBUG
 
 // define debug logging
 #define DLOG(Message) \
@@ -20,6 +20,6 @@
 #define DLOG(Message)
 #define DLOG_F(Format, ...)
 
-#endif // BAR_DEBUG
+#endif // MBAR_DEBUG
 
-#endif // BAR_LOG_H
+#endif // MBAR_LOG_H

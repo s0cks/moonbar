@@ -1,6 +1,6 @@
-#include "mybar.h"
+#include "moonbar.h"
 #include <stdlib.h>
 
-char* bar_get_version() {
+char* mbar_get_version() {
   return NULL;
 }

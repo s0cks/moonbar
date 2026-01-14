@@ -1,21 +1,21 @@
-#ifndef BAR_LSTATE_H
-#define BAR_LSTATE_H
+#ifndef MBAR_LSTATE_H
+#define MBAR_LSTATE_H
 
-#include "mybar.h"
+#include "moonbar.h"
 #include "app.h"
-#include "mybar/luabindings.h"
+#include "moonbar/luabindings.h"
 
-#define LUA_GLOBAL_BAR_STATE "bar_state"
+#define LUA_GLOBAL_MBAR_STATE "mbar_state"
 
-void barL_init(BarApp* app);
-void barL_doinit(BarApp* app);
-void barL_close(BarApp* app);
-void barL_init_config_ref(BarApp* app);
-const char* barL_get_style(BarApp* app);
-void barL_call_config_init(BarApp* app);
+void mbarL_init(BarApp* app);
+void mbarL_doinit(BarApp* app);
+void mbarL_close(BarApp* app);
+void mbarL_init_config_ref(BarApp* app);
+const char* mbarL_get_style(BarApp* app);
+void mbarL_call_config_init(BarApp* app);
 
 static inline void
-barL_push_config_ref(BarApp* app) {
+mbarL_push_config_ref(BarApp* app) {
   ASSERT(app);
   ASSERT(app->config_ref != LUA_NOREF);
 #define L app->L
@@ -23,22 +23,22 @@ barL_push_config_ref(BarApp* app) {
 #undef L
 }
 
-void barL_init_api(lua_State* L);
-void barL_initmetatable_label(lua_State* L);
-void barL_initmetatable_button(lua_State* L);
-void barL_initmetatable_event_route(lua_State* L);
+void mbarL_init_api(lua_State* L);
+void mbarL_initmetatable_label(lua_State* L);
+void mbarL_initmetatable_button(lua_State* L);
+void mbarL_initmetatable_event_route(lua_State* L);
 
 static inline void
-barL_hello_world(BarApp* app) {
+mbarL_hello_world(BarApp* app) {
   static const char* kHelloWorld = "print('Hello World')";
-  barL_dostring(app, kHelloWorld);
+  mbarL_dostring(app, kHelloWorld);
 }
 
-#define barL_check_global_app(L, Name)                    \
-  BarApp* Name = barL_get_bar_app(L);                     \
+#define mbarL_check_global_app(L, Name)                    \
+  BarApp* Name = mbarL_get_mbar_app(L);                     \
   if(!Name) {                                             \
     luaL_error(L, "failed to get global bar state");      \
     return 0;                                             \
   }
 
-#endif // BAR_LSTATE_H
+#endif // MBAR_LSTATE_H
