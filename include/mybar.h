@@ -29,6 +29,7 @@
 #define BAR_VERSION_PATCH @PROJECT_VERSION_PATCH@
 // clang-format on
 
+#include "mybar/callback.h"
 #include "mybar/event_router.h"
 
 typedef struct _BarApp {
@@ -49,6 +50,7 @@ typedef struct _BarApp {
   int update_timer;
   // uv stuff
   uv_loop_t* loop;
+  Callback* next_tick_listeners;
   uv_timer_t timer;
   struct _uv_gsource* source;
 } BarApp;

@@ -53,6 +53,18 @@ DEFINE_LUA_F(add_right) {
   return 0;
 }
 
+DEFINE_LUA_F(on_next_tick) {
+  barL_check_global_app(L, app);
+  Callback* cb = (Callback*)malloc(sizeof(Callback));
+  if(!cb) {
+    luaL_error(L, "failed to create Callback");
+    return 0;
+  }
+  cb_initbg_lfunc(cb, L, 1);
+  cb_list_append(&app->next_tick_listeners, cb);
+  return 0;
+}
+
 static const luaL_Reg kLibFuncs[] = {
   { "is_debug", is_debug },
   { "get_config_dir", get_config_dir },
@@ -61,6 +73,7 @@ static const luaL_Reg kLibFuncs[] = {
   { "add_left", add_left },
   { "add_center", add_center },
   { "add_right", add_right },
+  { "on_next_tick", on_next_tick },
   { NULL, NULL },
 };
 

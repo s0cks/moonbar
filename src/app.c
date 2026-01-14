@@ -21,8 +21,10 @@ void bar_publish(BarApp* app, const char* event) {
 #undef L
 }
 
-static inline void on_tick(uv_timer_t* handle) {
-  DLOG("tick");
+static inline void
+on_tick(uv_timer_t* handle) {
+  BarApp* app = (BarApp*)handle->data;
+  bar_on_tick(app);
 }
 
 static inline gboolean
@@ -51,20 +53,17 @@ bool bar_app_init(BarApp* app, int argc, char** argv) {
   app->loop = uv_loop_new();
   app->home = bar_get_config_dir();
   app->events = event_route_new();
+  app->next_tick_listeners = NULL;
   uv_timer_init(app->loop, &app->timer);
   uv_timer_start(&app->timer, on_tick, 0, 1000);
+  app->timer.data = app;
   app->source = uv_gsource_init(app->loop);
   barL_init(app);
   bar_init_gtk_app(app);
   return true;
 }
 
-void bar_add_left(BarApp* app, GtkWidget* widget) {
-
-}
-
 bool bar_app_run(BarApp* app) {
-  LOG("running app....");
   int status = g_application_run(G_APPLICATION(app->app), app->argc, app->argv);
   //TODO(@s0cks): check status
   return true;
@@ -80,4 +79,38 @@ void bar_app_free(BarApp* app) {
   uv_gsource_free(app->source);
   uv_loop_close(app->loop);
   free(app);
+}
+
+static inline void
+execute_next_tick_listeners(BarApp* app) {
+  ASSERT(app);
+  Callback* cb = app->next_tick_listeners;
+  Callback* prev = NULL;
+  app->next_tick_listeners = NULL;
+  do {
+    if(!cb)
+      break;
+    bar_exec_cb(app, cb);
+    prev = cb;
+    cb = cb->next;
+    cb_free(prev);
+  } while(cb);
+}
+
+void bar_exec_cb(BarApp* app, Callback* cb) {
+  ASSERT(app);
+  ASSERT(cb);
+  if(cb_is_lua(cb)) {
+#define L app->L
+    cbL_pcall(L, cb);
+#undef L
+  } else {
+    cb_ccall(cb);
+  }
+}
+
+void bar_on_tick(BarApp* app) {
+  ASSERT(app);
+  execute_next_tick_listeners(app);
+  //TODO(@s0cks): run next tick listeners
 }
