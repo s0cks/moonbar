@@ -31,28 +31,31 @@ widget_ptr(lua_State* L, const int index) {
   return (GtkWidget**)lua_touserdata(L, index);
 }
 
-DEFINE_LUA_F(add_left) {
-  mbarL_check_global_app(L, app);
-  GtkWidget* widget = *(widget_ptr(L, 1));
-  gtk_box_append(GTK_BOX(app->left), widget);
-  return 0;
+static inline GtkWidget*
+get_widget_ptr_param(lua_State* L, int index) {
+  if(lua_isfunction(L, index)) {
+    int status = lua_pcall(L, 1, 0, 0);
+    if(status != LUA_OK) {
+      luaL_error(L, "failed to execute callback");
+      return 0;
+    }
+    index = -1;
+  }
+  return *(widget_ptr(L, index));
 }
 
-DEFINE_LUA_F(add_center) {
-  mbarL_check_global_app(L, app);
-  GtkWidget* widget = *(widget_ptr(L, 1));
-  gtk_box_append(GTK_BOX(app->center), widget);
-  return 0;
-}
+#define DEFINE_LUA_APPEND_F(Side)                           \
+  DEFINE_LUA_F(append_##Side) {                             \
+    mbarL_check_global_app(L, app);                         \
+    mbar_append_##Side(app, get_widget_ptr_param(L, 1));    \
+    return 0;                                               \
+  }
+DEFINE_LUA_APPEND_F(left);
+DEFINE_LUA_APPEND_F(center);
+DEFINE_LUA_APPEND_F(right);
+#undef DEFINE_LUA_APPEND_F
 
-DEFINE_LUA_F(add_right) {
-  mbarL_check_global_app(L, app);
-  GtkWidget* widget = *(widget_ptr(L, 1));
-  gtk_box_append(GTK_BOX(app->right), widget);
-  return 0;
-}
-
-DEFINE_LUA_F(on_next_tick) {
+DEFINE_LUA_F(next_tick) {
   mbarL_check_global_app(L, app);
   Callback* cb = (Callback*)malloc(sizeof(Callback));
   if(!cb) {
@@ -69,10 +72,10 @@ static const luaL_Reg kLibFuncs[] = {
   { "get_config_dir", get_config_dir },
   { "get_cwd", get_cwd },
   { "on", on },
-  { "add_left", add_left },
-  { "add_center", add_center },
-  { "add_right", add_right },
-  { "on_next_tick", on_next_tick },
+  { "next_tick", next_tick },
+  { "append_left", append_left },
+  { "append_center", append_center },
+  { "append_right", append_right },
   { NULL, NULL },
 };
 

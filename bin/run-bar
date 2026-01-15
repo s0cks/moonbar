@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-MBAR_EXEC="${MBAR_EXEC:-./bar}"
+MBAR_EXEC="${MBAR_EXEC:-./moonbar}"
 MBAR_LIB_HOME="${MBAR_LIB_HOME:-${0:a:h:h}}"
 MBAR_CLIB_HOME="${MBAR_CLIB_HOME:-$(pwd)/bindings}"
 MBAR_CONFIG_HOME="${MBAR_CONFIG_HOME:-$XDG_CONFIG_HOME/bar}"

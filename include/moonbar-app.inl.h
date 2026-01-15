@@ -29,15 +29,15 @@ void mbar_app_load_style(BarApp* app, const char* filename);
 char* mbar_app_get_cwd(BarApp* app);
 char* mbar_get_home_from_env();
 
-#define DEFINE_BOX_GET(Side)            \
+#define DEFINE_BOX_GET(Side, Value)     \
   static inline GtkBox*                 \
   mbar_get_##Side(BarApp* app) {        \
     ASSERT(app);                        \
-    return GTK_BOX(app->Side);          \
+    return GTK_BOX((Value));            \
   }
-DEFINE_BOX_GET(left);
-DEFINE_BOX_GET(center);
-DEFINE_BOX_GET(right);
+DEFINE_BOX_GET(left, gtk_center_box_get_start_widget(app->box));
+DEFINE_BOX_GET(center, gtk_center_box_get_center_widget(app->box));
+DEFINE_BOX_GET(right, gtk_center_box_get_end_widget(app->box));
 #undef DEFINE_BOX_GET
 
 #define DEFINE_BOX_APPEND(Side)                             \

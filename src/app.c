@@ -54,6 +54,7 @@ bool mbar_app_init(BarApp* app, int argc, char** argv) {
   app->home = mbar_get_config_dir();
   app->events = event_route_new();
   app->next_tick_listeners = NULL;
+  app->box = NULL;
   uv_timer_init(app->loop, &app->timer);
   uv_timer_start(&app->timer, on_tick, 0, 1000);
   app->timer.data = app;

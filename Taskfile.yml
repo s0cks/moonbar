@@ -19,9 +19,9 @@ tasks:
   run:
     dir: "{{.BUILD_DIR}}/"
     env:
-      MBAR_EXEC: "{{.BUILD_DIR}}/bar"
-      MBAR_LIB_HOME: "{{.ROOT_DIR}}/"
-      MBAR_CLIB_HOME: "{{.BUILD_DIR}}/bindings/"
+      MBAR_EXEC: "{{.BUILD_DIR}}/moonbar"
+      MBAR_LIB_HOME: "{{.ROOT_DIR}}"
+      MBAR_CLIB_HOME: "{{.BUILD_DIR}}/bindings"
     cmds:
     - "{{.BIN_DIR}}/run-bar {{.CLI_ARGS}}"
   clean:

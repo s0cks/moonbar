@@ -21,7 +21,6 @@ mbar_set_left(BarApp* app, GtkWidget* w) {
   ASSERT(app);
   ASSERT(w);
   gtk_center_box_set_start_widget(app->box, w);
-  app->left = w;
   return w;
 }
 
@@ -30,7 +29,6 @@ mbar_set_center(BarApp* app, GtkWidget* w) {
   ASSERT(app);
   ASSERT(w);
   gtk_center_box_set_center_widget(app->box, w);
-  app->center = w;
   return w;
 }
 
@@ -39,7 +37,6 @@ mbar_set_right(BarApp* app, GtkWidget* w) {
   ASSERT(app);
   ASSERT(w);
   gtk_center_box_set_end_widget(app->box, w);
-  app->right = w;
   return w;
 }
 

@@ -16,7 +16,7 @@ mbar_create_left_box_with_padding(BarApp* app, const int padding) {
 
 static inline GtkWidget*
 mbar_create_left_box(BarApp* app) {
-  return mbar_create_left_box_with_padding(app, 0);
+  return mbar_create_left_box_with_padding(app, 1);
 }
 
 // Center
@@ -31,7 +31,7 @@ mbar_create_center_box_with_padding(BarApp* app, const int padding) {
 
 static inline GtkWidget*
 mbar_create_center_box(BarApp* app) {
-  return mbar_create_center_box_with_padding(app, 0);
+  return mbar_create_center_box_with_padding(app, 1);
 }
 
 // Right
@@ -46,7 +46,7 @@ mbar_create_right_box_with_padding(BarApp* app, const int padding) {
 
 static inline GtkWidget*
 mbar_create_right_box(BarApp* app) {
-  return mbar_create_right_box_with_padding(app, 0);
+  return mbar_create_right_box_with_padding(app, 1);
 }
 
 // Main
