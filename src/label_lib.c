@@ -1,11 +1,11 @@
 #include "moonbar.h"
-#include "button.h"
+#include "label.h"
 #include "state_lua.h"
 
-DEFINE_LUA_F(button_new) {
+DEFINE_LUA_F(new_label) {
   const char* text = NULL;
   if(lua_isnoneornil(L, -1)) {
-    text = NULL;
+    text = "";
   } else if(lua_isstring(L, -1)) {
     text = lua_tostring(L, -1);
   } else {
@@ -18,18 +18,17 @@ DEFINE_LUA_F(button_new) {
     return 0;
   }
 
-  Button* value = mbar_create_button(app, text);
-  if(!value) {
-    luaL_error(L, "failed to create gtk button.");
+  Label* label = mbar_create_label(app, text);
+  if(!label) {
+    luaL_error(L, "failed to create gtk label");
     return 0;
   }
-  mbarL_pushbutton(L, value);
+  mbarL_pushlabel(L, label);
   return 1;
 }
 
-DECLARE_LUA_LIB(Button) {
-  { "new", button_new },
-  { NULL, NULL },
+DECLARE_LUA_LIB(Label) {
+  {"new", new_label},
+  {NULL, NULL}
 };
-
-DEFINE_LUA_INITLIB(button);
+DEFINE_LUA_INITLIB(label);

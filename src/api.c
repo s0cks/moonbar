@@ -68,6 +68,8 @@ DEFINE_LUA_F(next_tick) {
 }
 
 DEFINE_LUA_F(spawn_process) {
+  const int num_args = lua_gettop(L) - 1;
+  DLOG_F("number of args: %d\n", num_args);
   mbarL_check_global_app(L, app);
   int argc = 0;
   char** argv = NULL;
@@ -97,8 +99,6 @@ DEFINE_LUA_F(spawn_process) {
     luaL_error(L, "failed to spawn new process");
     return 0;
   }
-
-  const int num_args = lua_gettop(L) - 1;
 
   // on_success
   if(num_args >= 2) {
@@ -136,6 +136,23 @@ static const luaL_Reg kLibFuncs[] = {
   { NULL, NULL },
 };
 
+static inline void
+init_metatables(lua_State* L) {
+  ASSERT(L);
+  mbarL_initmetatable_widget(L);
+  mbarL_initmetatable_label(L);
+  mbarL_initmetatable_button(L);
+  mbarL_initmetatable_event_route(L);
+}
+
+static inline void
+init_libs(lua_State* L) {
+  ASSERT(L);
+  mbarL_initlib_label(L);
+  mbarL_initlib_button(L);
+  mbarL_initlib_event_route(L);
+}
+
 void mbarL_init_api(lua_State* L) {
   lua_newtable(L);
   luaL_setfuncs(L, kLibFuncs, 0);
@@ -143,7 +160,6 @@ void mbarL_init_api(lua_State* L) {
   lua_setfield(L, -2, "__index");
   lua_setglobal(L, kLibName);
 
-  mbarL_initmetatable_widget(L);
-  mbarL_initmetatable_label(L);
-  mbarL_initmetatable_button(L);
+  init_metatables(L);
+  init_libs(L);
 }

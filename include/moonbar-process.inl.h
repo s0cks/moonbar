@@ -50,9 +50,10 @@ DEFINE_SET_REF(on_finished);
   static inline bool                                              \
   mbar_proc_pcall_##Ref(Process* proc) {                          \
     ASSERT(proc);                                                 \
-    ASSERT(mbar_proc_has_##Ref(proc));                            \
+    if(!mbar_proc_has_##Ref(proc))                                \
+      return false;                                               \
     lua_rawgeti(proc->owner->L, LUA_REGISTRYINDEX, proc->Ref);    \
-    lua_insert(proc->owner->L, -2);  \
+    lua_insert(proc->owner->L, -2);                               \
     return lua_pcall(proc->owner->L, NumArgs, 0, 0) == LUA_OK;    \
   }
 DEFINE_CALL_REF(on_success, 1)

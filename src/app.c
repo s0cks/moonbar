@@ -48,7 +48,7 @@ void mbar_start_update_timer(BarApp* app) {
 
 static inline bool
 is_changed(const int events) {
-  return events & UV_CHANGE;
+  return (events & UV_CHANGE);
 }
 
 static inline void
@@ -59,12 +59,20 @@ on_style_changed(uv_fs_event_t* handle, const char* filename, int events, int st
     return;
   }
 
-  if(!is_changed(events))
-    return;
   mbar_load_style(app);
+  uv_fs_event_stop(handle);
+  uv_fs_event_init(app->loop, &app->style_watcher);
+  mbar_start_style_watcher(app);
+}
+
+bool mbar_is_style_watcher_running(BarApp* app) {
+  ASSERT(app);
+  return uv_is_active((uv_handle_t*)&app->style_watcher);
 }
 
 void mbar_start_style_watcher(BarApp* app) {
+  if(mbar_is_style_watcher_running(app))
+    return;
   const char* filename = mbar_config_get_style(app);
   DLOG_F("starting style filewatcher for %s\n", filename);
   const int status = uv_fs_event_start(&app->style_watcher, &on_style_changed, filename, 0);

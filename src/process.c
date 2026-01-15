@@ -1,5 +1,6 @@
 #include "moonbar.h"
 #include "app.h"
+#include "util.h"
 
 static inline void
 on_read(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
@@ -30,14 +31,15 @@ on_process_exit(uv_process_t* handle, int64_t status, int signal) {
   Process* proc = (Process*)handle->data;
   if(status == 0) {
     proc->out_buffer->data[proc->out_buffer->length + 1] = '\0';
-    lua_pushstring(proc->owner->L, (const char*)proc->out_buffer->data);
+    char* result = trim((char*)proc->out_buffer->data);
+    lua_pushstring(proc->owner->L, result);
     mbar_proc_pcall_on_success(proc);
   } else {
     proc->err_buffer->data[proc->err_buffer->length + 1] = '\0';
-    lua_pushstring(proc->owner->L, (const char*)proc->err_buffer->data);
+    char* result = trim((char*)proc->err_buffer->data);
+    lua_pushstring(proc->owner->L, result);
     mbar_proc_pcall_on_failure(proc);
   }
-  DLOG_F("process finished w/ %lu\n", status);
   mbar_proc_pcall_on_finished(proc);
   // TODO(@s0cks):
   // uv_close((uv_handle_t*)handle, NULL);

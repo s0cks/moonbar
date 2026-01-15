@@ -2,59 +2,32 @@
 #include "button.h"
 #include "state_lua.h"
 
-#define INVALID_BUTTON_USERDATA ({            \
-  luaL_error(L, "invalid Button userdata.");  \
-  return 0;                                   \
-})
-
-#define BUTTON_USERDATA(Name, Index)                    \
-  Button* Name = (Button*)lua_touserdata(L, (Index));   \
-  if((Name) == NULL)                                    \
-    INVALID_BUTTON_USERDATA;
-
-static const luaL_Reg kButtonFuncs[] = {
-  { NULL, NULL },
-};
-
-DEFINE_LUA_F(button_new) {
-  const char* text = NULL;
-  if(lua_isnoneornil(L, -1)) {
-    text = NULL;
-  } else if(lua_isstring(L, -1)) {
-    text = lua_tostring(L, -1);
-  } else {
-    text = lua_tostring(L, -1);
-  }
-
-  BarApp* app = mbarL_get_mbar_app(L);
-  if(!app) {
-    luaL_error(L, "failed to get global bar state");
+DEFINE_LUA_F(set_text) {
+  Button* button = (Button*)lua_touserdata(L, 1);
+  if(button == NULL) {
+    luaL_error(L, "invalid button userdata");
     return 0;
   }
-
-  Button* value = mbar_create_button(app, text);
-  if(!value) {
-    luaL_error(L, "failed to create gtk button.");
-    return 0;
-  }
-  mbarL_pushbutton(L, value);
+  const char* text = lua_tostring(L, -1);
+  gtk_button_set_label(GTK_BUTTON(button->handle), text);
   return 1;
 }
 
-static const luaL_Reg kButtonLibFuncs[] = {
-  { "new", button_new },
+DEFINE_LUA_F(get_text) {
+  Button* button = (Button*)lua_touserdata(L, 1);
+  if(button == NULL) {
+    luaL_error(L, "invalid button userdata");
+    return 0;
+  }
+  const char* text = gtk_button_get_label(GTK_BUTTON(button->handle));
+  lua_pushstring(L, text);
+  return 1;
+}
+
+DECLARE_LUA_METATABLE(Button) {
+  { "get_text", get_text },
+  { "set_text", set_text },
   { NULL, NULL },
 };
 
-void mbarL_initmetatable_button(lua_State* L) {
-  luaL_newmetatable(L, kButtonMetatableName);
-  luaL_setfuncs(L, kButtonFuncs, 0);
-  luaL_getmetatable(L, kWidgetMetatableName);
-  lua_setfield(L, -2, "__index");
-
-  lua_newtable(L);
-  luaL_setfuncs(L, kButtonLibFuncs, 0);
-  lua_pushvalue(L, -1);
-  lua_setfield(L, -2, "__index");
-  lua_setglobal(L, "ButtonLib");
-}
+DEFINE_LUA_INITWIDGETMETATABLE(button, Button);

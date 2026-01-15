@@ -7,8 +7,8 @@ DEFINE_LUA_F(new_event_route) {
   return 1;
 }
 
-DECLARE_LUA_INITLIB(EventRoute) {
+DECLARE_LUA_LIB(EventRoute) {
   { "new", new_event_route },
   { NULL, NULL },
 };
-DEFINE_LUA_INITLIB(EventRoute);
+DEFINE_LUA_INITLIB(event_route);

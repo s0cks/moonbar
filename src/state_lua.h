@@ -25,8 +25,10 @@ void mbarL_init_api(lua_State* L);
 void mbarL_initmetatable_widget(lua_State* L);
 void mbarL_initmetatable_label(lua_State* L);
 void mbarL_initmetatable_button(lua_State* L);
-void mbarL_initlib_button(lua_State* L);
 void mbarL_initmetatable_event_route(lua_State* L);
+void mbarL_initlib_label(lua_State* L);
+void mbarL_initlib_button(lua_State* L);
+void mbarL_initlib_event_route(lua_State* L);
 
 static inline void
 mbarL_hello_world(BarApp* app) {
@@ -41,9 +43,27 @@ mbarL_hello_world(BarApp* app) {
     return 0;                                             \
   }
 
-#define DECLARE_LUA_INITLIB(Name)               \
+#define DECLARE_LUA_METATABLE(Name)           \
+  static const luaL_Reg k##Name##Funcs[] =
+
+#define DECLARE_LUA_LIB(Name)                   \
   static const char* kLibName = #Name "Lib";    \
-  static const luaL_Reg kLibFuncs[] =           \
+  static const luaL_Reg kLibFuncs[] =
+
+#define DEFINE_LUA_INITMETATABLE(Name, Type)        \
+  void mbarL_initmetatable_##Name(lua_State* L) {   \
+    luaL_newmetatable(L, k##Type##MetatableName);   \
+    luaL_setfuncs(L, k##Type##Funcs, 0);            \
+    lua_pushvalue(L, -1);                           \
+    lua_setfield(L, -2, "__index");                 \
+  }
+#define DEFINE_LUA_INITWIDGETMETATABLE(Name, Type)  \
+  void mbarL_initmetatable_##Name(lua_State* L) {   \
+    luaL_newmetatable(L, k##Type##MetatableName);   \
+    luaL_setfuncs(L, k##Type##Funcs, 0);            \
+    luaL_getmetatable(L, kWidgetMetatableName);      \
+    lua_setfield(L, -2, "__index");                 \
+  }
 
 #define DEFINE_LUA_INITLIB(Name)                \
   void mbarL_initlib_##Name(lua_State* L) {     \
@@ -53,5 +73,28 @@ mbarL_hello_world(BarApp* app) {
     lua_setfield(L, -2, "__index");             \
     lua_setglobal(L, kLibName);                 \
   }
+
+#define _INVALID_WIDGET_USERDATA(L, Type) ({    \
+  luaL_error(L, "invalid %s userdata", #Type);  \
+  return 0;                                     \
+})
+#define _GET_WIDGET_USERDATA(L, Name, Type, Index)  \
+  Type* Name = (Type*)lua_touserdata(L, (Index));   \
+  if((Name) == NULL) _INVALID_WIDGET_USERDATA(L, Type);
+
+#define mbarL_error_invalid_button_userdata(L) \
+  _INVALID_WIDGET_USERDATA(L, Button)
+#define mbarL_get_button_userdata(L, Name, Index) \
+  _GET_WIDGET_USERDATA(L, Name, Button, Index)
+
+#define mbarL_error_invalid_label_userdata(L) \
+  _INVALID_WIDGET_USERDATA(L, Label)
+#define mbarL_get_label_userdata(L, Name, Index) \
+  _GET_WIDGET_USERDATA(L, Name, Label, Index)
+
+#define mbarL_error_invalid_event_route_userdata(L) \
+  _INVALID_WIDGET_USERDATA(L, EventRoute)
+#define mbarL_get_event_route_userdata(L, Name, Index) \
+  _GET_WIDGET_USERDATA(L, Name, EventRoute, Index)
 
 #endif // MBAR_LSTATE_H

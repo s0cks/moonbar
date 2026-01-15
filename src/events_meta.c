@@ -1,4 +1,5 @@
 #include "moonbar.h"
+#include "state_lua.h"
 
 DEFINE_LUA_F(on) {
   EventRoute* route = (EventRoute*)lua_touserdata(L, 1);
@@ -21,15 +22,10 @@ DEFINE_LUA_F(publish) {
   return 1;
 }
 
-static const luaL_Reg kEventRouteFuncs[] = {
+DECLARE_LUA_METATABLE(EventRoute) {
   { "on", on },
   { "publish", publish },
   {NULL, NULL},
 };
 
-void mbarL_initmetatable_event_route(lua_State* L) {
-  luaL_newmetatable(L, kEventRouteMetatableName);
-  luaL_setfuncs(L, kEventRouteFuncs, 0);
-  lua_pushvalue(L, -1);
-  lua_setfield(L, -2, "__index");
-}
+DEFINE_LUA_INITMETATABLE(event_route, EventRoute);

@@ -24,51 +24,9 @@ DEFINE_LUA_F(get_text) {
   return 1;
 }
 
-static const luaL_Reg kLabelFuncs[] = {
+DECLARE_LUA_METATABLE(Label) {
   { "get_text", get_text },
   { "set_text", set_text },
   {NULL, NULL},
 };
-
-DEFINE_LUA_F(new_label) {
-  const char* text = NULL;
-  if(lua_isnoneornil(L, -1)) {
-    text = "";
-  } else if(lua_isstring(L, -1)) {
-    text = lua_tostring(L, -1);
-  } else {
-    text = lua_tostring(L, -1);
-  }
-
-  BarApp* app = mbarL_get_mbar_app(L);
-  if(!app) {
-    luaL_error(L, "failed to get global bar state");
-    return 0;
-  }
-
-  Label* label = mbar_create_label(app, text);
-  if(!label) {
-    luaL_error(L, "failed to create gtk label");
-    return 0;
-  }
-  mbarL_pushlabel(L, label);
-  return 1;
-}
-
-static const luaL_Reg kLabelLibFuncs[] = {
-  {"new", new_label},
-  {NULL, NULL}
-};
-
-void mbarL_initmetatable_label(lua_State* L) {
-  luaL_newmetatable(L, kLabelMetatableName);
-  luaL_setfuncs(L, kLabelFuncs, 0);
-  lua_pushvalue(L, -1);
-  lua_setfield(L, -2, "__index");
-
-  lua_newtable(L);
-  luaL_setfuncs(L, kLabelLibFuncs, 0);
-  lua_pushvalue(L, -1);
-  lua_setfield(L, -2, "__index");
-  lua_setglobal(L, "LabelLib");
-}
+DEFINE_LUA_INITWIDGETMETATABLE(label, Label);

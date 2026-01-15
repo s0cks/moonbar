@@ -1,5 +1,6 @@
 #include "moonbar.h"
 #include "widget.h"
+#include "state_lua.h"
 
 #define BUTTON_USERDATA(Name, Index)                    \
   Button* Name = (Button*)lua_touserdata(L, (Index));   \
@@ -17,14 +18,23 @@ DEFINE_LUA_F(widget_on) {
   return 0;
 }
 
+DEFINE_LUA_F(widget_add_class) {
+  const void* data = lua_touserdata(L, 1);
+  if(!data) {
+    luaL_error(L, "invalid widget for param 1");
+    return 0;
+  }
+  GtkWidget* widget = mbar_widget_get_handle(data);
+  const char* cls = lua_tostring(L, 2);
+  gtk_widget_add_css_class(widget, cls);
+  gtk_widget_queue_draw(widget);
+  return 0;
+}
+
 static const luaL_Reg kWidgetFuncs[] = {
   { "on", widget_on },
+  { "add_class", widget_add_class },
   { NULL, NULL },
 };
 
-void mbarL_initmetatable_widget(lua_State* L) {
-  luaL_newmetatable(L, kWidgetMetatableName);
-  luaL_setfuncs(L, kWidgetFuncs, 0);
-  lua_pushvalue(L, -1);
-  lua_setfield(L, -2, "__index");
-}
+DEFINE_LUA_INITMETATABLE(widget, Widget);
