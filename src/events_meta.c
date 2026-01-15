@@ -27,26 +27,9 @@ static const luaL_Reg kEventRouteFuncs[] = {
   {NULL, NULL},
 };
 
-DEFINE_LUA_F(new_event_route) {
-  EventRoute* value = event_route_new();
-  mbarL_pushevent_route(L, value);
-  return 1;
-}
-
-static const luaL_Reg kEventRouteLibFuncs[] = {
-  { "new", new_event_route },
-  { NULL, NULL },
-};
-
 void mbarL_initmetatable_event_route(lua_State* L) {
   luaL_newmetatable(L, kEventRouteMetatableName);
   luaL_setfuncs(L, kEventRouteFuncs, 0);
   lua_pushvalue(L, -1);
   lua_setfield(L, -2, "__index");
-
-  lua_newtable(L);
-  luaL_setfuncs(L, kEventRouteLibFuncs, 0);
-  lua_pushvalue(L, -1);
-  lua_setfield(L, -2, "__index");
-  lua_setglobal(L, "EventRouteLib");
 }

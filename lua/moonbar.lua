@@ -34,4 +34,13 @@ if M.is_debug() then
   M.print_info()
 end
 
+function M.exec_shell(args, on_success, on_failure, on_error)
+  local command = {
+    os.getenv('SHELL') or '/usr/bin/sh',
+    '-c',
+    table.concat(args, ' '),
+  }
+  return M.spawn_process(command, on_success, on_failure, on_error)
+end
+
 return M

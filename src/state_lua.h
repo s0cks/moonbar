@@ -25,6 +25,7 @@ void mbarL_init_api(lua_State* L);
 void mbarL_initmetatable_widget(lua_State* L);
 void mbarL_initmetatable_label(lua_State* L);
 void mbarL_initmetatable_button(lua_State* L);
+void mbarL_initlib_button(lua_State* L);
 void mbarL_initmetatable_event_route(lua_State* L);
 
 static inline void
@@ -38,6 +39,19 @@ mbarL_hello_world(BarApp* app) {
   if(!Name) {                                             \
     luaL_error(L, "failed to get global bar state");      \
     return 0;                                             \
+  }
+
+#define DECLARE_LUA_INITLIB(Name)               \
+  static const char* kLibName = #Name "Lib";    \
+  static const luaL_Reg kLibFuncs[] =           \
+
+#define DEFINE_LUA_INITLIB(Name)                \
+  void mbarL_initlib_##Name(lua_State* L) {     \
+    lua_newtable(L);                            \
+    luaL_setfuncs(L, kLibFuncs, 0);             \
+    lua_pushvalue(L, -1);                       \
+    lua_setfield(L, -2, "__index");             \
+    lua_setglobal(L, kLibName);                 \
   }
 
 #endif // MBAR_LSTATE_H
