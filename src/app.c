@@ -46,6 +46,32 @@ void mbar_start_update_timer(BarApp* app) {
   app->update_timer = create_update_timer(app);
 }
 
+static inline bool
+is_changed(const int events) {
+  return events & UV_CHANGE;
+}
+
+static inline void
+on_style_changed(uv_fs_event_t* handle, const char* filename, int events, int status) {
+  BarApp* app = (BarApp*)handle->data;
+  if(status < 0) {
+    mbar_error(app, "failed to watch style changes");
+    return;
+  }
+
+  if(!is_changed(events))
+    return;
+  mbar_load_style(app);
+}
+
+void mbar_start_style_watcher(BarApp* app) {
+  const char* filename = mbar_config_get_style(app);
+  DLOG_F("starting style filewatcher for %s\n", filename);
+  const int status = uv_fs_event_start(&app->style_watcher, &on_style_changed, filename, 0);
+  if(status < 0)
+    mbar_error(app, "failed to create style watcher");
+}
+
 bool mbar_app_init(BarApp* app, int argc, char** argv) {
   ASSERT(app);
   app->argc = argc;
@@ -55,9 +81,14 @@ bool mbar_app_init(BarApp* app, int argc, char** argv) {
   app->events = event_route_new();
   app->next_tick_listeners = NULL;
   app->box = NULL;
+
   uv_timer_init(app->loop, &app->timer);
   uv_timer_start(&app->timer, on_tick, 0, 1000);
   app->timer.data = app;
+
+  uv_fs_event_init(app->loop, &app->style_watcher);
+  app->style_watcher.data = app;
+
   app->source = uv_gsource_init(app->loop);
   mbarL_init(app);
   mbar_init_gtk_app(app);

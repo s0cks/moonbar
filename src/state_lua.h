@@ -10,7 +10,6 @@ void mbarL_init(BarApp* app);
 void mbarL_doinit(BarApp* app);
 void mbarL_close(BarApp* app);
 void mbarL_init_config_ref(BarApp* app);
-const char* mbarL_get_style(BarApp* app);
 void mbarL_call_config_init(BarApp* app);
 
 static inline void

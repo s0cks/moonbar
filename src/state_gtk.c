@@ -107,7 +107,8 @@ void mbar_init_gtk_window(BarApp* app) {
 void mbar_load_style(BarApp* app) {
   ASSERT(app);
   mbar_publish(app, "style.pre-load");
-  const char* filename = mbarL_get_style(app);
+  const char* filename = mbar_config_get_style(app);
+
   ASSERT(filename);
   DLOG_F("loading style from %s ....", filename);
 
@@ -128,4 +129,7 @@ void mbar_load_style(BarApp* app) {
   g_object_unref(css_provider);
   DLOG("finished loading style.");
   mbar_publish(app, "style.post-load");
+
+  if(mbar_config_get_watch_style(app))
+    mbar_start_style_watcher(app);
 }

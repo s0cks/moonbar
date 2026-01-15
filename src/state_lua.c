@@ -25,22 +25,6 @@ void mbarL_doinit(BarApp* app) {
   free(init_filename);
 }
 
-const char* mbarL_get_style(BarApp* app) {
-  ASSERT(app);
-#define L app->L
-  mbarL_push_config_ref(app);
-  lua_getfield(L, -1, "style");
-  if(lua_isstring(L, -1)) {
-    return lua_tostring(L, -1);
-  } else if(!lua_isnoneornil(L, -1)) {
-    mbar_error(app, "invalid style type");
-    return NULL;
-  }
-
-  return "default";
-#undef L
-}
-
 #define DEFINE_LUA_PUSH_TYPE(Name, Type)                  \
   void mbarL_push##Name(lua_State* L, Type* value) {      \
     ASSERT(L);                                            \

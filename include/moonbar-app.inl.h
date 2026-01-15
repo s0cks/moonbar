@@ -19,6 +19,7 @@ typedef struct _BarApp {
   uv_loop_t* loop;
   Callback* next_tick_listeners;
   uv_timer_t timer;
+  uv_fs_event_t style_watcher;
   struct _uv_gsource* source;
 } BarApp;
 

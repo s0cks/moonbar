@@ -36,6 +36,7 @@ char* mbar_get_version();
 #include "moonbar-label.inl.h"
 #include "moonbar-button.inl.h"
 #include "moonbar-lua.inl.h"
+#include "moonbar-config.inl.h"
 
 #ifdef MBAR_DEBUG
 
