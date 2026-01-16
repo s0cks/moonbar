@@ -35,6 +35,7 @@ char* mbar_get_version();
 #include "moonbar-callback.inl.h"
 #include "moonbar-events.inl.h"
 #include "moonbar-app.inl.h"
+#include "moonbar-box.inl.h"
 #include "moonbar-label.inl.h"
 #include "moonbar-button.inl.h"
 #include "moonbar-lua.inl.h"

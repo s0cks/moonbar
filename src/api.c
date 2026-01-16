@@ -143,6 +143,7 @@ init_metatables(lua_State* L) {
   mbarL_initmetatable_label(L);
   mbarL_initmetatable_button(L);
   mbarL_initmetatable_event_route(L);
+  mbarL_initmetatable_box(L);
 }
 
 static inline void
@@ -151,6 +152,7 @@ init_libs(lua_State* L) {
   mbarL_initlib_label(L);
   mbarL_initlib_button(L);
   mbarL_initlib_event_route(L);
+  mbarL_initlib_box(L);
 }
 
 void mbarL_init_api(lua_State* L) {

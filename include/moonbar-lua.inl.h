@@ -8,7 +8,8 @@ void mbarL_dofile(BarApp* app, const char* filename);
 #define FOR_EACH_METATABLE_NAME(V) \
   V(Label) \
   V(Button) \
-  V(EventRoute)
+  V(EventRoute) \
+  V(Box)
 
 #define DEFINE_METATABLE_NAME(Name) \
   static const char* k##Name##MetatableName = #Name;
@@ -49,3 +50,8 @@ DECLARE_LUA_TYPE_STACK_OPS(button, Button);
 // │ EventRoutes │
 // ╰─────────────╯
 DECLARE_LUA_TYPE_STACK_OPS(event_route, EventRoute);
+
+// ╭───────╮
+// │ Boxes │
+// ╰───────╯
+DECLARE_LUA_TYPE_STACK_OPS(box, Box);

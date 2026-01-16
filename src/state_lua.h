@@ -22,13 +22,23 @@ mbarL_push_config_ref(BarApp* app) {
 }
 
 void mbarL_init_api(lua_State* L);
-void mbarL_initmetatable_widget(lua_State* L);
-void mbarL_initmetatable_label(lua_State* L);
-void mbarL_initmetatable_button(lua_State* L);
-void mbarL_initmetatable_event_route(lua_State* L);
-void mbarL_initlib_label(lua_State* L);
-void mbarL_initlib_button(lua_State* L);
-void mbarL_initlib_event_route(lua_State* L);
+
+#define DECLARE_INITMETATABLE(Name)                 \
+  void mbarL_initmetatable_##Name(lua_State* L);
+DECLARE_INITMETATABLE(widget);
+DECLARE_INITMETATABLE(label);
+DECLARE_INITMETATABLE(button);
+DECLARE_INITMETATABLE(event_route);
+DECLARE_INITMETATABLE(box);
+#undef DECLARE_INITMETATABLE
+
+#define DECLARE_INITLIB(Name)                 \
+  void mbarL_initlib_##Name(lua_State* L);
+DECLARE_INITLIB(label);
+DECLARE_INITLIB(button);
+DECLARE_INITLIB(event_route);
+DECLARE_INITLIB(box);
+#undef DECLARE_INITLIB
 
 static inline void
 mbarL_hello_world(BarApp* app) {

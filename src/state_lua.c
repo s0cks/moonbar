@@ -36,6 +36,7 @@ void mbarL_doinit(BarApp* app) {
 DEFINE_LUA_PUSH_TYPE(label, Label);
 DEFINE_LUA_PUSH_TYPE(button, Button);
 DEFINE_LUA_PUSH_TYPE(event_route, EventRoute);
+DEFINE_LUA_PUSH_TYPE(box, Box);
 #undef DEFINE_LUA_PUSH_TYPE
 
 #define DEFINE_LUA_TO_TYPE(Name, Type)                      \
@@ -47,6 +48,7 @@ DEFINE_LUA_PUSH_TYPE(event_route, EventRoute);
 DEFINE_LUA_TO_TYPE(label, Label);
 DEFINE_LUA_TO_TYPE(button, Button);
 DEFINE_LUA_TO_TYPE(event_route, EventRoute);
+DEFINE_LUA_TO_TYPE(box, Box);
 #undef DEFINE_LUA_TO_TYPE
 
 static inline void
