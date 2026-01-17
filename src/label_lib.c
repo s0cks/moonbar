@@ -18,15 +18,12 @@ DEFINE_LUA_F(new_label) {
     return 0;
   }
 
-  fprintf(stdout, "creating label...\n");
   Label* label = mbar_create_label(app, text);
   if(!label) {
     luaL_error(L, "failed to create gtk label");
     return 0;
   }
-  fprintf(stdout, "pushing label...\n");
   mbarL_pushlabel(L, label);
-  fprintf(stdout, "done.\n");
   return 1;
 }
 

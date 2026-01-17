@@ -69,7 +69,6 @@ DEFINE_LUA_F(next_tick) {
 
 DEFINE_LUA_F(spawn_process) {
   const int num_args = lua_gettop(L) - 1;
-  DLOG_F("number of args: %d\n", num_args);
   mbarL_check_global_app(L, app);
   int argc = 0;
   char** argv = NULL;

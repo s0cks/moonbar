@@ -10,7 +10,6 @@ DEFINE_LUA_F(set_text) {
   }
   const char* text = lua_tostring(L, 2);
   gtk_label_set_text(GTK_LABEL(label->handle), text);
-  fprintf(stdout, "setting label text to: %s\n", text);
   return 1;
 }
 
