@@ -98,9 +98,9 @@ bool mbar_app_init(BarApp* app, int argc, char** argv) {
   uv_fs_event_init(app->loop, &app->style_watcher);
   app->style_watcher.data = app;
 
-  // app->hypr = mbar_hypr_new(app);
-  // if(!app->hypr)
-  //   mbar_error(app, "failed to create hypr client");
+  app->hypr = mbar_hypr_new(app);
+  if(!app->hypr)
+    mbar_error(app, "failed to create hypr client");
 
   app->source = uv_gsource_init(app->loop);
   mbarL_init(app);

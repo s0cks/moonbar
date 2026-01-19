@@ -14,12 +14,7 @@ Label* mbar_create_label(BarApp* app, const char* text) {
   gtk_label_set_xalign(GTK_LABEL(widget), 0.5);
   gtk_label_set_yalign(GTK_LABEL(widget), 0.5);
   gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_CENTER);
-  Label* label = (Label*)malloc(sizeof(Label));
-  label->owner = app;
-  label->events = NULL;
-  label->handle = widget;
-  g_object_ref(label->handle);
-  return label;
+  return new_widget(app, widget, sizeof(Label));
 }
 
 void mbarL_push_new_label(BarApp* app, const char* text) {

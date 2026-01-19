@@ -1,10 +1,12 @@
 #ifndef HYPR_PARSER_H
 #define HYPR_PARSER_H
 
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "hypr_event.h"
 
 #define FOR_EACH_HYPR_PARSER_STATE(V) \
   V(ParsingStart)                     \
@@ -18,14 +20,15 @@ typedef enum _HyprParserState {
 #undef DEFINE_STATE
 } HyprParserState;
 
-static inline const char*
-hypr_parser_get_state_name(HyprParserState s) {
-  switch(s) {
+static inline const char* hypr_parser_get_state_name(HyprParserState s) {
+  switch (s) {
 #define DEFINE_GET_NAME(Name) \
-    case k##Name: return #Name;
+  case k##Name:               \
+    return #Name;
     FOR_EACH_HYPR_PARSER_STATE(DEFINE_GET_NAME)
 #undef DEFINE_GET_NAME
-    default: return "invalid state.";
+    default:
+      return "invalid state.";
   }
 }
 
@@ -39,27 +42,26 @@ typedef enum _HyprParserError {
 #define DEFINE_ERROR(Name) k##Name##Error,
   FOR_EACH_HYPR_PARSER_ERROR(DEFINE_ERROR)
 #undef DEFINE_ERROR
-  kTotalNumberOfErrors,
+      kTotalNumberOfErrors,
 } HyprParserError;
 
-static inline const char*
-hypr_parser_get_error_name(const HyprParserError e) {
-  switch(e) {
-    case kNoError: return "no error.";
+static inline const char* hypr_parser_get_error_name(const HyprParserError e) {
+  switch (e) {
+    case kNoError:
+      return "no error.";
 #define DEFINE_GET_NAME(Name) \
-    case k##Name##Error: return #Name;
-    FOR_EACH_HYPR_PARSER_ERROR(DEFINE_GET_NAME)
+  case k##Name##Error:        \
+    return #Name;
+      FOR_EACH_HYPR_PARSER_ERROR(DEFINE_GET_NAME)
 #undef DEFINE_GET_NAME
-    default: return "invalid error.";
+    default:
+      return "invalid error.";
   }
 }
 
 typedef struct _HyprParser HyprParser;
 typedef bool (*HyprParserStartCallback)(HyprParser* parser);
-typedef bool (*HyprParserEventCallback)(HyprParser* parser, const char* event, const uint64_t event_len);
-typedef bool (*HyprParserDataStartCallback)(HyprParser* parser);
-typedef bool (*HyprParserData0Callback)(HyprParser* parser, const char* value, const uint64_t value_length);
-typedef bool (*HyprParserData1Callback)(HyprParser* parser, const bool value);
+typedef bool (*HyprParserParseEventCallback)(HyprParser* parser, HyprEvent* event);
 typedef bool (*HyprParserFinishedCallback)(HyprParser* parser);
 
 struct _HyprParser {
@@ -69,61 +71,43 @@ struct _HyprParser {
   uint64_t rpos;
   uint64_t wpos;
   HyprParserStartCallback on_start;
-  HyprParserEventCallback on_event;
-  HyprParserDataStartCallback on_data_start;
-  HyprParserData0Callback on_data0;
-  HyprParserData1Callback on_data1;
+  HyprParserParseEventCallback on_event;
   HyprParserFinishedCallback on_finished;
 };
 
-static inline void
-hypr_parser_set_state(HyprParser* parser, const HyprParserState state) {
+static inline void hypr_parser_set_state(HyprParser* parser, const HyprParserState state) {
   parser->state = state;
 }
 
-static inline bool
-hypr_parser_get_state(HyprParser* parser) {
+static inline bool hypr_parser_get_state(HyprParser* parser) {
   return parser->state;
 }
 
-static inline bool
-hypr_parser_is(HyprParser* parser, const HyprParserState state) {
+static inline bool hypr_parser_is(HyprParser* parser, const HyprParserState state) {
   return hypr_parser_get_state(parser) == state;
 }
 
-static inline void
-hypr_parser_set_error(HyprParser* parser, const HyprParserError err) {
+static inline void hypr_parser_set_error(HyprParser* parser, const HyprParserError err) {
   parser->err = err;
 }
 
-static inline bool
-hypr_parser_has_error(HyprParser* parser) {
+static inline bool hypr_parser_has_error(HyprParser* parser) {
   return parser->err != kNoError;
 }
 
-static inline void
-hypr_parser_init(HyprParser* parser,
-                 const uint8_t* bytes,
-                 const uint64_t num_bytes,
-                 HyprParserStartCallback on_start,
-                 HyprParserEventCallback on_event,
-                 HyprParserDataStartCallback on_data_start,
-                 HyprParserData0Callback on_data0,
-                 HyprParserData1Callback on_data1,
-                 HyprParserFinishedCallback on_finished) {
+static inline void hypr_parser_init(HyprParser* parser, const uint8_t* bytes, const uint64_t num_bytes,
+                                    HyprParserStartCallback on_start, HyprParserParseEventCallback on_event,
+                                    HyprParserFinishedCallback on_finished) {
   fprintf(stdout, "creating hypr parser\n");
   parser->state = kParsingFinished;
   parser->err = kNoError;
   parser->on_start = on_start;
   parser->on_event = on_event;
-  parser->on_data_start = on_data_start;
-  parser->on_data0 = on_data0;
-  parser->on_data1 = on_data1;
   parser->on_finished = on_finished;
-  if(bytes && num_bytes > 0) {
+  if (bytes && num_bytes > 0) {
     const uint64_t total_bytes = sizeof(uint8_t) * num_bytes;
     uint8_t* new_data = (uint8_t*)malloc(total_bytes);
-    if(!new_data) {
+    if (!new_data) {
       fprintf(stderr, "failed to allocate memory for parser data\n");
       return;
     }
@@ -141,8 +125,8 @@ hypr_parser_init(HyprParser* parser,
 bool hypr_parser_parse(HyprParser* parser);
 
 static inline void hypr_parser_free(HyprParser* parser) {
-  if(parser->data)
+  if (parser->data)
     free(parser->data);
 }
 
-#endif // HYPR_PARSER_H
+#endif  // HYPR_PARSER_H

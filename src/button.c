@@ -1,13 +1,13 @@
 #include "button.h"
-#include "moonbar.h"
+
 #include "app.h"
-#include "widget.h"
+#include "moonbar.h"
 #include "state_lua.h"
+#include "widget.h"
 
 FOR_EACH_BUTTON_SIGNAL(DEFINE_ON_WIDGET_SIGNAL);
 
-static inline GtkWidget*
-create_gtk_button(const char* text) {
+static inline GtkWidget* create_gtk_button(const char* text) {
   GtkWidget* button = text != NULL ? gtk_button_new_with_label(text) : gtk_button_new();
   // TODO(@s0cks): do something?
   return button;
@@ -16,15 +16,15 @@ create_gtk_button(const char* text) {
 Button* mbar_create_button(BarApp* app, const char* text) {
   ASSERT(app);
   Button* widget = (Button*)malloc(sizeof(Button));
-  if(!widget) {
+  if (!widget) {
     mbar_error(app, "failed to create Button");
-    return NULL;
+    return nullptr;
   }
 
   GtkWidget* button = create_gtk_button(text);
-  if(!button) {
+  if (!button) {
     mbar_error(app, "failed to create GtkButton");
-    return NULL;
+    return nullptr;
   }
   mbar_widget_init(widget, app, button, FOR_EACH_BUTTON_SIGNAL);
   return widget;
@@ -34,7 +34,7 @@ void mbarL_push_button(BarApp* app, const char* text) {
   ASSERT(app);
   Button* value = mbar_create_button(app, text);
 #define L app->L
-  if(!value) {
+  if (!value) {
     luaL_error(L, "failed to create Button.");
     return;
   }
@@ -43,7 +43,7 @@ void mbarL_push_button(BarApp* app, const char* text) {
 }
 
 void mbar_free_button(Button* btn) {
-  if(!btn)
+  if (!btn)
     return;
   event_route_free(btn->owner->L, btn->events);
   g_object_unref(btn->handle);
@@ -53,15 +53,15 @@ void mbar_free_button(Button* btn) {
 DEFINE_LUA_TYPE_LIB(button, Button);
 
 DEFINE_LUA_TYPE_INIT_F(button) {
-  const char* text = NULL;
-  if(lua_isnoneornil(L, -1)) {
-    text = NULL;
+  const char* text = nullptr;
+  if (lua_isnoneornil(L, -1)) {
+    text = nullptr;
   } else {
     text = lua_tostring(L, -1);
   }
 
   BarApp* app = mbarL_get_mbar_app(L);
-  if(!app) {
+  if (!app) {
     luaL_error(L, "failed to get global bar state");
     return 0;
   }
@@ -71,7 +71,7 @@ DEFINE_LUA_TYPE_INIT_F(button) {
 
 DEFINE_LUA_F(set_text) {
   Button* button = (Button*)lua_touserdata(L, 1);
-  if(button == NULL) {
+  if (button == NULL) {
     luaL_error(L, "invalid button userdata");
     return 0;
   }
@@ -82,7 +82,7 @@ DEFINE_LUA_F(set_text) {
 
 DEFINE_LUA_F(get_text) {
   Button* button = (Button*)lua_touserdata(L, 1);
-  if(button == NULL) {
+  if (button == NULL) {
     luaL_error(L, "invalid button userdata");
     return 0;
   }
@@ -91,10 +91,10 @@ DEFINE_LUA_F(get_text) {
   return 1;
 }
 
-DECLARE_LUA_METATABLE(Button) {
-  { "get_text", get_text },
-  { "set_text", set_text },
-  { NULL, NULL },
+DECLARE_LUA_METATABLE(Button){
+    {"get_text", get_text},
+    {"set_text", set_text},
+    {nullptr, nullptr},
 };
 
 DEFINE_LUA_INITWIDGETMETATABLE(button, Button);
