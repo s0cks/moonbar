@@ -8,6 +8,7 @@ set(MOONBAR_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/moonbar/)
 if(CMAKE_BUILD_TYPE MATCHES "^[Dd]ebug")
   add_compile_definitions(MBAR_DEBUG)
+  add_compile_definitions(_NDEBUG)
 endif()
 
 set(MOONBAR_IWYU_MAPPINGS "${CMAKE_SOURCE_DIR}/iwyu.imp")

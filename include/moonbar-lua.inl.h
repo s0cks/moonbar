@@ -100,3 +100,14 @@ FOR_EACH_LUA_TYPE(DECLARE_LUA_TYPE_STACK_OPS)
 
 #define mbarL_error_invalid_event_route_userdata(L)    _INVALID_WIDGET_USERDATA(L, EventRoute)
 #define mbarL_get_event_route_userdata(L, Name, Index) _GET_WIDGET_USERDATA(L, Name, EventRoute, Index)
+
+#define _DEFINE_LUAOPEN_MOONBAR_LIB_F(Name, LibFuncs) \
+  extern int luaopen_moonbar_##Name(lua_State* L) {   \
+    LUA_NEW_LIB_TABLE(LibFuncs);                      \
+    return 1;                                         \
+  }
+
+// clang-format off
+#define DEFINE_LUAOPEN_MOONBAR_LIB_F(Name) \
+  _DEFINE_LUAOPEN_MOONBAR_LIB_F(Name, kLibFuncs)
+// clang-format on

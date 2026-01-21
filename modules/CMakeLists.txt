@@ -1,2 +1,5 @@
 add_subdirectory(tray/)
 add_subdirectory(battery/)
+add_subdirectory(bluetooth/)
+add_subdirectory(power_profiles/)
+add_subdirectory(backlight/)
