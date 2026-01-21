@@ -56,33 +56,21 @@ DEFINE_LUA_APPEND_F(center);
 DEFINE_LUA_APPEND_F(right);
 #undef DEFINE_LUA_APPEND_F
 
-DEFINE_LUA_F(next) {
-  mbarL_check_global_app(L, app);
-  Callback* cb = (Callback*)malloc(sizeof(Callback));
-  if (!cb) {
-    luaL_error(L, "failed to create Callback");
-    return 0;
-  }
-  cb_initbg_lfunc(cb, L, 1);
-  cb_list_append(&app->next_tick_listeners, cb);
-  return 0;
-}
-
 static const char* kLibName = "CoreLib";
 static const luaL_Reg kLibFuncs[] = {
     {"on", on},
     {"is_debug", is_debug},
     {"get_config_dir", get_config_dir},
     {"get_cwd", get_cwd},
-    {"next", next},
 
     {"append_left", append_left},
     {"append_center", append_center},
     {"append_right", append_right},
 
+    {"next", mbarL_api_next},
     {"spawn", mbarL_api_spawn},
-    {"read_lines", mbarL_api_read_lines},
     {"watch", mbarL_api_watch},
+    {"read_lines", mbarL_api_read_lines},
     {nullptr, nullptr},
 };
 

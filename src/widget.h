@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "moonbar.h"
+
 #define MOONBAR_WIDGET_FIELDS \
   GtkWidget* handle;          \
   EventRoute* events;         \
@@ -70,6 +72,13 @@ static inline void mbar_widget_publish(void* widget, const char* event) {
 #undef L
 }
 
+static inline GtkWidget* mbarL_check_widget(lua_State* L, const int index) {
+  const void* data = lua_touserdata(L, index);
+  if (!data)
+    return nullptr;
+  return mbar_widget_get_handle(data);
+}
+
 #define DEFINE_ON_WIDGET_SIGNAL(Signal)                              \
   static inline void on_##Signal(GtkWidget* widget, gpointer data) { \
     mbar_widget_publish((void*)data, #Signal);                       \
@@ -82,13 +91,15 @@ static inline void mbar_widget_publish(void* widget, const char* event) {
 MBAR_INLINE void* new_widget(BarApp* owner, GtkWidget* handle, const size_t size) {
   ASSERT(owner);
   ASSERT(size > 0);
+  if (!handle)
+    return nullptr;
   void* widget = malloc(size);
-  if (!widget)
-    return NULL;
-  *mbar_widget_get_owner_ptr(widget) = owner;
-  *mbar_widget_get_handle_ptr(widget) = handle;
-  *mbar_widget_get_events_ptr(widget) = NULL;
-  g_object_ref(handle);
+  if (widget) {
+    *mbar_widget_get_owner_ptr(widget) = owner;
+    *mbar_widget_get_handle_ptr(widget) = handle;
+    *mbar_widget_get_events_ptr(widget) = nullptr;
+    g_object_ref(handle);
+  }
   return widget;
 }
 

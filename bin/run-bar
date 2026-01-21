@@ -24,33 +24,30 @@ __generate_lua_path() {
   return 0
 }
 
-__generate_lua_cpath() {
-  bindings=$(
-    fselect abspath from $MBAR_CLIB_HOME/ depth 1 \
-      where is_dir and name != 'CMakeFiles'
-  )
-  bindings=("${(f)bindings}")
-
-  reply=()
-  for binding_dir in $bindings; do
-    reply+=(
-      "$binding_dir/?.so"
-    )
-  done
-  return 0
-}
+# __generate_lua_cpath() {
+#   bindings=$(
+#     fselect abspath from $MBAR_CLIB_HOME/ depth 1 \
+#       where is_dir and name != 'CMakeFiles'
+#   )
+#   bindings=("${(f)bindings}")
+#
+#   reply=()
+#   for binding_dir in $bindings; do
+#     reply+=(
+#       "$binding_dir/?.so"
+#     )
+#   done
+#   return 0
+# }
 
 __generate_lua_path
 export LUA_PATH="${(j|;|)reply};;"
 
-__generate_lua_cpath
-export LUA_CPATH="${(j|;|)reply};;"
+# __generate_lua_cpath
+# export LUA_CPATH="${(j|;|)reply};;"
 
 export MESA_DEBUG=silent
 export MESA_LOG_FILE=mesa.log
 
-if [[ -v MBAR_DEBUG ]]; then
-(cd "$MBAR_CONFIG_HOME/" && lldb -o run -- $MBAR_EXEC)
-else
-  (cd "$MBAR_CONFIG_HOME/" && $MBAR_EXEC)
-fi
+cd "$MBAR_CONFIG_HOME/" \
+  && $MBAR_EXEC

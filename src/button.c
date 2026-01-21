@@ -15,17 +15,18 @@ static inline GtkWidget* create_gtk_button(const char* text) {
 
 Button* mbar_create_button(BarApp* app, const char* text) {
   ASSERT(app);
+  GtkWidget* button = create_gtk_button(text);
+  if (!button) {
+    mbar_error(app, "failed to create GtkButton");
+    return nullptr;
+  }
+
   Button* widget = (Button*)malloc(sizeof(Button));
   if (!widget) {
     mbar_error(app, "failed to create Button");
     return nullptr;
   }
 
-  GtkWidget* button = create_gtk_button(text);
-  if (!button) {
-    mbar_error(app, "failed to create GtkButton");
-    return nullptr;
-  }
   mbar_widget_init(widget, app, button, FOR_EACH_BUTTON_SIGNAL);
   return widget;
 }
@@ -70,22 +71,15 @@ DEFINE_LUA_TYPE_INIT_F(button) {
 }
 
 DEFINE_LUA_F(set_text) {
-  Button* button = (Button*)lua_touserdata(L, 1);
-  if (button == NULL) {
-    luaL_error(L, "invalid button userdata");
-    return 0;
-  }
-  const char* text = lua_tostring(L, -1);
-  gtk_button_set_label(GTK_BUTTON(button->handle), text);
-  return 1;
+  Button* button = mbarL_check_button(L, 1);
+  ASSERT(button);
+  gtk_button_set_label(GTK_BUTTON(button->handle), lua_tostring(L, 2));
+  return 0;
 }
 
 DEFINE_LUA_F(get_text) {
-  Button* button = (Button*)lua_touserdata(L, 1);
-  if (button == NULL) {
-    luaL_error(L, "invalid button userdata");
-    return 0;
-  }
+  Button* button = mbarL_check_button(L, 1);
+  ASSERT(button);
   const char* text = gtk_button_get_label(GTK_BUTTON(button->handle));
   lua_pushstring(L, text);
   return 1;

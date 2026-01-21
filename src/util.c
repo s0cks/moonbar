@@ -1,10 +1,11 @@
 #include "util.h"
-#include "moonbar.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
+
+#include "moonbar.h"
 
 bool file_exists(const char* filename) {
   ASSERT(filename);
@@ -13,10 +14,10 @@ bool file_exists(const char* filename) {
 
 char* mbar_get_config_dir() {
   char* home = getenv("MBAR_HOME");
-  if(home)
+  if (home)
     return strdup(home);
   home = getenv("XDG_CONFIG_HOME");
-  if(home) {
+  if (home) {
     const char* new_home_suffix = "/bar";
     size_t home_len = strlen(home);
     size_t new_home_len = home_len + strlen(new_home_suffix) + 1;
@@ -25,7 +26,7 @@ char* mbar_get_config_dir() {
     return new_home;
   }
   home = getenv("HOME");
-  if(!home) {
+  if (!home) {
     fprintf(stderr, "failed to get $HOME environment variable");
     exit(1);
   }
@@ -39,9 +40,9 @@ char* mbar_get_config_dir() {
 
 char* mbar_get_cwd() {
   char cwd[PATH_MAX];
-  if(getcwd(cwd, sizeof(cwd)) == NULL) {
-      fprintf(stderr, "failed to get current working directory.\n");
-      return NULL;
+  if (getcwd(cwd, sizeof(cwd)) == NULL) {
+    fprintf(stderr, "failed to get current working directory.\n");
+    return nullptr;
   }
   return strdup(cwd);
 }

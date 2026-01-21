@@ -114,6 +114,7 @@ static inline void hypr_parser_init(HyprParser* parser, const uint8_t* bytes, co
 
     memset(new_data, 0, total_bytes);
     memcpy(new_data, bytes, num_bytes);
+    new_data[num_bytes] = '\0';
     parser->data = new_data;
     parser->rpos = 0;
     parser->wpos = num_bytes;

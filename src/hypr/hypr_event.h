@@ -243,7 +243,7 @@ DEFINE_EVENT(MoveWorkspacev2, moveworkspacev2) {
 
 DEFINE_EVENT(RenameWorkspace, renameworkspace) {
   char* workspace_id;
-  char* name;
+  char* new_name;
 };
 
 DEFINE_EVENT(ActiveSpecial, activespecial) {
@@ -358,6 +358,7 @@ DEFINE_EVENT(Minimized, minimized) {
 DEFINE_EVENT(Bell, bell) {
   char* window_address;
 };
+#undef DEFINE_EVENT
 
 static inline const char* hypr_event_get_name(const HyprEventType rhs) {
   switch (rhs) {
@@ -382,6 +383,6 @@ typedef struct _HyprEvent {
   };
 } HyprEvent;
 
-#undef DEFINE_EVENT
+void hypr_event_print(HyprEvent* event);
 
 #endif  // HYPR_EVENT_H

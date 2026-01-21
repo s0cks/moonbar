@@ -1,10 +1,11 @@
-#include "moonbar.h"
-#include "state_lua.h"
-#include "state_gtk.h"
-#include "uv_gsource.h"
-#include "util.h"
-#include "log.h"
+#include "hypr/hyprctl.h"
 #include "hypr_client.h"
+#include "log.h"
+#include "moonbar.h"
+#include "state_gtk.h"
+#include "state_lua.h"
+#include "util.h"
+#include "uv_gsource.h"
 
 void mbar_error(BarApp* app, const char* err) {
   ASSERT(app);
@@ -15,47 +16,25 @@ void mbar_error(BarApp* app, const char* err) {
 
 void mbar_publish(BarApp* app, const char* event) {
   EventRoute* root = event_route_search(app->events, event);
-  if(!root)
+  if (!root)
     return;
 #define L app->L
   event_route_call(L, root);
 #undef L
 }
 
-static inline void
-on_tick(uv_timer_t* handle) {
+static inline void on_tick(uv_timer_t* handle) {
   BarApp* app = (BarApp*)handle->data;
   mbar_on_tick(app);
 }
 
-static inline gboolean
-on_update_tick(gpointer data) {
-  BarApp* app = (BarApp*)data;
-  LOG("g update tick");
-  return G_SOURCE_CONTINUE;
-}
-
-static inline int
-create_update_timer(BarApp* app) {
-  return g_timeout_add_seconds(1, on_update_tick, app);
-}
-
-void mbar_start_update_timer(BarApp* app) {
-  ASSERT(app);
-  if(app->update_timer != 0)
-    return;
-  app->update_timer = create_update_timer(app);
-}
-
-static inline bool
-is_changed(const int events) {
+static inline bool is_changed(const int events) {
   return (events & UV_CHANGE);
 }
 
-static inline void
-on_style_changed(uv_fs_event_t* handle, const char* filename, int events, int status) {
+static inline void on_style_changed(uv_fs_event_t* handle, const char* filename, int events, int status) {
   BarApp* app = (BarApp*)handle->data;
-  if(status < 0) {
+  if (status < 0) {
     mbar_error(app, "failed to watch style changes");
     return;
   }
@@ -72,13 +51,23 @@ bool mbar_is_style_watcher_running(BarApp* app) {
 }
 
 void mbar_start_style_watcher(BarApp* app) {
-  if(mbar_is_style_watcher_running(app))
+  if (mbar_is_style_watcher_running(app))
     return;
   const char* filename = mbar_config_get_style(app);
   DLOG_F("starting style filewatcher for %s\n", filename);
   const int status = uv_fs_event_start(&app->style_watcher, &on_style_changed, filename, 0);
-  if(status < 0)
+  if (status < 0)
     mbar_error(app, "failed to create style watcher");
+}
+
+static inline bool get_hypr_instance_path(char* result, const size_t result_len) {
+  const char* his = getenv("HYPRLAND_INSTANCE_SIGNATURE");
+  const char* xdg_runtime_dir = getenv("XDG_RUNTIME_DIR");
+  if (!his || !xdg_runtime_dir)
+    return false;
+  memset(result, 0, result_len);
+  snprintf(result, result_len, "%s/hypr/%s", xdg_runtime_dir, his);
+  return true;
 }
 
 bool mbar_app_init(BarApp* app, int argc, char** argv) {
@@ -88,8 +77,8 @@ bool mbar_app_init(BarApp* app, int argc, char** argv) {
   app->loop = uv_loop_new();
   app->home = mbar_get_config_dir();
   app->events = event_route_new();
-  app->next_tick_listeners = NULL;
-  app->box = NULL;
+  app->next_tick_listeners = nullptr;
+  app->box = nullptr;
 
   uv_timer_init(app->loop, &app->timer);
   uv_timer_start(&app->timer, on_tick, 0, 1000);
@@ -98,9 +87,9 @@ bool mbar_app_init(BarApp* app, int argc, char** argv) {
   uv_fs_event_init(app->loop, &app->style_watcher);
   app->style_watcher.data = app;
 
-  app->hypr = mbar_hypr_new(app);
-  if(!app->hypr)
-    mbar_error(app, "failed to create hypr client");
+  // Hyprctl hyprctl;
+  // hyprctl_init(app->loop, &hyprctl);
+  // hyprctl_sends(&hyprctl, "dispatch workspace 1");
 
   app->source = uv_gsource_init(app->loop);
   mbarL_init(app);
@@ -110,42 +99,41 @@ bool mbar_app_init(BarApp* app, int argc, char** argv) {
 
 bool mbar_app_run(BarApp* app) {
   int status = g_application_run(G_APPLICATION(app->app), app->argc, app->argv);
-  //TODO(@s0cks): check status
+  // TODO(@s0cks): check status
   return true;
 }
 
 void mbar_app_free(BarApp* app) {
   ASSERT(app);
-  if(app->app)
+  if (app->app)
     g_object_unref(app->app);
   mbarL_close(app);
-  if(app->home)
+  if (app->home)
     free(app->home);
   uv_gsource_free(app->source);
   uv_loop_close(app->loop);
   free(app);
 }
 
-static inline void
-execute_next_tick_listeners(BarApp* app) {
+static inline void execute_next_tick_listeners(BarApp* app) {
   ASSERT(app);
   Callback* cb = app->next_tick_listeners;
-  Callback* prev = NULL;
-  app->next_tick_listeners = NULL;
+  Callback* prev = nullptr;
+  app->next_tick_listeners = nullptr;
   do {
-    if(!cb)
+    if (!cb)
       break;
     mbar_exec_cb(app, cb);
     prev = cb;
     cb = cb->next;
     cb_free(prev);
-  } while(cb);
+  } while (cb);
 }
 
 void mbar_exec_cb(BarApp* app, Callback* cb) {
   ASSERT(app);
   ASSERT(cb);
-  if(cb_is_lua(cb)) {
+  if (cb_is_lua(cb)) {
 #define L app->L
     cbL_pcall(L, cb);
 #undef L
@@ -157,5 +145,5 @@ void mbar_exec_cb(BarApp* app, Callback* cb) {
 void mbar_on_tick(BarApp* app) {
   ASSERT(app);
   execute_next_tick_listeners(app);
-  //TODO(@s0cks): run next tick listeners
+  // TODO(@s0cks): run next tick listeners
 }

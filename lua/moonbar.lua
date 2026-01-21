@@ -30,10 +30,6 @@ function M.print_info()
   print("")
 end
 
-if M.is_debug() then
-  M.print_info()
-end
-
 function M.exec_shell(args, on_success, on_failure, on_error)
   local command = {
     os.getenv("SHELL") or "/usr/bin/sh",

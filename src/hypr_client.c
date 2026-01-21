@@ -30,6 +30,7 @@ static inline bool on_parse_finished(HyprParser* parser) {
 
 static inline bool on_event(HyprParser* parser, HyprEvent* event) {
   ASSERT(parser);
+  hypr_event_print(event);
   return true;
 }
 
@@ -47,7 +48,7 @@ static inline void on_read(uv_stream_t* stream, ssize_t nread, const uv_buf_t* b
   } else if (nread < 0) {
     if (nread != UV_EOF)
       fprintf(stderr, "failed to read from hyprland ipc socket\n");
-    uv_close((uv_handle_t*)stream, NULL);
+    uv_close((uv_handle_t*)stream, nullptr);
   }
   free(buf->base);
 }
@@ -68,10 +69,12 @@ static inline void on_connect(uv_connect_t* req, int status) {
 static inline void connect_to_hypr_socket(HyprClient* client, uv_pipe_t* pipe, const char* socket) {
   ASSERT(client);
   ASSERT(socket);
+
   char sock_path[PATH_MAX];
   memset(sock_path, 0, sizeof(sock_path));
   snprintf(sock_path, sizeof(sock_path), "%s/%s", client->instance_path, socket);
   DLOG_F("connecting to %s\n", sock_path);
+
   uv_pipe_init(client->owner->loop, pipe, 0);
   uv_connect_t* conn = (uv_connect_t*)malloc(sizeof(uv_connect_t));
   conn->data = client;

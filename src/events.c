@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
-#include "moonbar.h"
+
 #include "app.h"
+#include "moonbar.h"
 
 EventRoute* event_route_new() {
   EventRoute* node = (EventRoute*)malloc(sizeof(EventRoute));
-  if(!node)
+  if (!node)
     return NULL;
   node->path = NULL;
   node->terminal = false;
@@ -15,20 +16,20 @@ EventRoute* event_route_new() {
 }
 
 bool event_route_call(lua_State* L, EventRoute* root) {
-  if(!root || root->callback == LUA_NOREF)
+  if (!root || root->callback == LUA_NOREF)
     return false;
   lua_rawgeti(L, LUA_REGISTRYINDEX, root->callback);
   return lua_pcall(L, 0, 0, 0) == LUA_OK;
 }
 
-//TODO(@s0cks): remove L param or store L in EventRoute
+// TODO(@s0cks): remove L param or store L in EventRoute
 void event_route_free(lua_State* L, EventRoute* root) {
-  if(!root)
+  if (!root)
     return;
-  if(root->callback != LUA_NOREF)
+  if (root->callback != LUA_NOREF)
     luaL_unref(L, LUA_REGISTRYINDEX, root->callback);
-  for(int idx = 0; idx < kEventAlphabetSize; idx++) {
-    if(!root->children[idx])
+  for (int idx = 0; idx < kEventAlphabetSize; idx++) {
+    if (!root->children[idx])
       continue;
     event_route_free(L, root->children[idx]);
   }
@@ -40,17 +41,17 @@ static inline int to_index(const char c) {
 }
 
 #define BEGIN_FOREACH_CHAR_IN_EVENT(EventVar, IndexVar) \
-  for(int i = 0; EventVar[i] != '\0'; i++) {                 \
-    int IndexVar = to_index(EventVar[i]);                           \
+  for (int i = 0; EventVar[i] != '\0'; i++) {           \
+    int IndexVar = to_index(EventVar[i]);
 
 #define END_FOREACH_CHAR_IN_EVENT }
 
 EventRoute* event_route_insert(EventRoute* root, const char* event, const int callback) {
   EventRoute* curr = root;
   BEGIN_FOREACH_CHAR_IN_EVENT(event, index)
-    if(curr->children[index] == NULL)
-      curr->children[index] = event_route_new();
-    curr = curr->children[index];
+  if (curr->children[index] == NULL)
+    curr->children[index] = event_route_new();
+  curr = curr->children[index];
   END_FOREACH_CHAR_IN_EVENT
   curr->path = strdup(event);
   curr->callback = callback;
@@ -59,7 +60,7 @@ EventRoute* event_route_insert(EventRoute* root, const char* event, const int ca
 }
 
 EventRoute* event_route_insertl(EventRoute* route, const char* event, lua_State* L, const int index) {
-  //TODO(@s0cks): check if index is function
+  // TODO(@s0cks): check if index is function
   lua_pushvalue(L, index);
   int callback = luaL_ref(L, LUA_REGISTRYINDEX);
   return event_route_insert(route, event, callback);
@@ -68,16 +69,15 @@ EventRoute* event_route_insertl(EventRoute* route, const char* event, lua_State*
 EventRoute* event_route_search(EventRoute* root, const char* event) {
   EventRoute* curr = root;
   BEGIN_FOREACH_CHAR_IN_EVENT(event, index)
-    if(curr->children[index] == NULL)
-      return NULL;
-    curr = curr->children[index];
+  if (curr->children[index] == NULL)
+    return NULL;
+  curr = curr->children[index];
   END_FOREACH_CHAR_IN_EVENT
   return curr && curr->terminal ? curr : NULL;
 }
 
 void mbarL_push_new_event_route(BarApp* app) {
   EventRoute* event_route = event_route_new();
-  if(!event_route)
-    return
-  mbarL_pushevent_route(app->L, event_route);
+  if (!event_route)
+    return mbarL_pushevent_route(app->L, event_route);
 }
